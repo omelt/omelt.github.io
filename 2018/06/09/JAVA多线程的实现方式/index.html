@@ -94,24 +94,24 @@
 
 
 
-  <meta name="description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+  <meta name="description" content="主要讲一下几种多线程的实现的原理">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java中static顺序">
-<meta property="og:url" content="http://yoursite.com/2018/09/15/Java中static顺序/index.html">
+<meta property="og:title" content="JAVA多线程的实现方式">
+<meta property="og:url" content="http://yoursite.com/2018/06/09/JAVA多线程的实现方式/index.html">
 <meta property="og:site_name" content="Omelt&#39;s blog">
-<meta property="og:description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+<meta property="og:description" content="主要讲一下几种多线程的实现的原理">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-01-06T10:12:29.820Z">
+<meta property="og:updated_time" content="2019-01-06T13:49:02.129Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java中static顺序">
-<meta name="twitter:description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+<meta name="twitter:title" content="JAVA多线程的实现方式">
+<meta name="twitter:description" content="主要讲一下几种多线程的实现的原理">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/09/15/Java中static顺序/">
+  <link rel="canonical" href="http://yoursite.com/2018/06/09/JAVA多线程的实现方式/">
 
 
 
@@ -121,7 +121,7 @@
   };
 </script>
 
-  <title>Java中static顺序 | Omelt's blog</title>
+  <title>JAVA多线程的实现方式 | Omelt's blog</title>
   
 
 
@@ -286,7 +286,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/Java中static顺序/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/09/JAVA多线程的实现方式/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="omelt">
@@ -303,7 +303,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java中static顺序
+          <h1 class="post-title" itemprop="name headline">JAVA多线程的实现方式
 
               
             
@@ -329,7 +329,7 @@
                 
               
 
-              <time title="Created: 2018-09-15 17:40:51" itemprop="dateCreated datePublished" datetime="2018-09-15T17:40:51+08:00">2018-09-15</time>
+              <time title="Created: 2018-06-09 21:15:12" itemprop="dateCreated datePublished" datetime="2018-06-09T21:15:12+08:00">2018-06-09</time>
             
 
             
@@ -346,7 +346,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-01-06 18:12:29" itemprop="dateModified" datetime="2019-01-06T18:12:29+08:00">2019-01-06</time>
+                <time title="Modified: 2019-01-06 21:49:02" itemprop="dateModified" datetime="2019-01-06T21:49:02+08:00">2019-01-06</time>
               
             
           </span>
@@ -379,15 +379,19 @@
       
 
       
-        <blockquote>
-<p>java中内的static代码块是按顺序加载的,在上面的优先</p>
-</blockquote>
-<a id="more"></a>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class test&#123;</span><br><span class="line">	static &#123;</span><br><span class="line">		a=5;	</span><br><span class="line">	&#125;</span><br><span class="line">	static int a=6;</span><br><span class="line">	//上面等于</span><br><span class="line">	//static int a;</span><br><span class="line">	//static &#123;</span><br><span class="line">	//	a=6;	</span><br><span class="line">	//&#125;</span><br><span class="line">&#125;  //此时a的结果为6</span><br></pre></td></tr></table></figure>
+        <h3 id="主要讲一下几种多线程的实现的原理"><a href="#主要讲一下几种多线程的实现的原理" class="headerlink" title="主要讲一下几种多线程的实现的原理"></a>主要讲一下几种多线程的实现的原理</h3><a id="more"></a>
 <hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">原因在了解类初始化后就清楚了</span><br><span class="line">类初始化这是类加载过程的最后一步,除了加载阶段外,其他动作用户都不能自定义,全由jvm主导.到了初始化,才真正开始执行定义的java代码(在准备阶段,变量已经赋</span><br><span class="line">过一次系统要求初始值)根据程序员通过程序制定的主观计划去初始化类变量和其他资源,初始化阶段就是执行类构造器&lt;clinit&gt;()方法的过程.</span><br><span class="line">&lt;clinit&gt;方法是编译器自动收集类中的所有类变量的赋值动作和静态语句块中的语句并产生的.</span><br><span class="line">编译器收集的顺序是由语句在源文件出现的顺序决定.静态语句块只能访问到定义在静态语句快之前的变量,之后的虽然可以赋值但不可以访问.</span><br><span class="line">&lt;clinit&gt;和实例构造器&lt;init&gt;不同,不需要显示调用父类构造器,因此jvm会保证父类的&lt;clinit&gt;以及被调用</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">static &#123;</span><br><span class="line">        a=5;</span><br><span class="line">        System.out.println(a);  //Error: java: 非法前向引用</span><br><span class="line">    &#125;</span><br><span class="line">    static int a=6;</span><br></pre></td></tr></table></figure>
-<p>可以简单理解为static在类中以顺序执行.</p>
+<blockquote>
+<p>一般想到多线程实现,最先想到就是继承Thread类和实现Runable接口,这里就不进行代码演示了.<br>Thread类是java多线程的实现自身也实现Runable接口.查看源码就可以发现如果是传入一个实现Runable的类去实例一个Thread对象,那么会在Thread内经过多次init方法,赋值给target属性.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"> public Thread(Runnable target) &#123;</span><br><span class="line">        init(null, target, &quot;Thread-&quot; + nextThreadNum(), 0);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> private void init(ThreadGroup g, Runnable target, String name,</span><br><span class="line">                      long stackSize) &#123;</span><br><span class="line">        init(g, target, name, stackSize, null, true);</span><br><span class="line"> &#125;</span><br><span class="line"> private void init(ThreadGroup g, Runnable target, String name,</span><br><span class="line">                      long stackSize, AccessControlContext acc,</span><br><span class="line">                      boolean inheritThreadLocals) &#123;</span><br><span class="line">        </span><br><span class="line">        ...</span><br><span class="line">       </span><br><span class="line">        this.target = target;</span><br><span class="line">       </span><br><span class="line">        ...</span><br><span class="line">       </span><br><span class="line">    &#125;</span><br><span class="line">@Override</span><br><span class="line">public void run() &#123;</span><br><span class="line">   if (target != null) &#123;</span><br><span class="line">        target.run();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p>Runable 里面只有一个run方法(@FunctionalInterface) 函数式接口,作用很明显不用再解释了</p>
+<hr>
+<p>然后如果需要线程返回的结果,需要FutureTaskh和实现Callable,先给个例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class TestCallble implements Callable&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object call() throws Exception &#123;</span><br><span class="line">        Thread.sleep(5000);</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    TestCallable testCallable=new TestCallable();</span><br><span class="line">    FutureTask&lt;Integer&gt; futureTask=new FutureTask&lt;Integer&gt;(testCallable);</span><br><span class="line"></span><br><span class="line">    new Thread(futureTask).start();</span><br><span class="line"></span><br><span class="line">    try &#123;</span><br><span class="line">        System.out.println(futureTask.get());</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; catch (ExecutionException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>一步步查看源码可以发现<br>Callable 里面只有一个call方法(@FunctionalInterface)<br>FutureTask实现了Runable 在run()方法中调用了自己对应属性(Callable)<br>然后传给线程就相当于是使用Runable实现,严格意义上需要FutureTaskh和实现Callable就是Runable实现多线程,然后封装等待参数,自己也可以写对应的方法实现这个功能,当然JAVA本身肯定很优秀,自己写加强理解而已,就不要真的添乱了- -.</p>
+</blockquote>
+<hr>
+<p>然后可以使用线程池实现,这里就不多细说了.</p>
 
       
     </div>
@@ -418,8 +422,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/09/JAVA多线程的实现方式/" rel="next" title="JAVA多线程的实现方式">
-                <i class="fa fa-chevron-left"></i> JAVA多线程的实现方式
+              <a href="/2018/06/06/Java中单例模式/" rel="next" title="Java中单例模式">
+                <i class="fa fa-chevron-left"></i> Java中单例模式
               </a>
             
           </div>
@@ -428,8 +432,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/12/18/Java中lambda表达式/" rel="prev" title="Java中lambda表达式">
-                Java中lambda表达式 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/09/15/Java中static顺序/" rel="prev" title="Java中static顺序">
+                Java中static顺序 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -475,8 +479,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -522,6 +535,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#主要讲一下几种多线程的实现的原理"><span class="nav-number">1.</span> <span class="nav-text">主要讲一下几种多线程的实现的原理</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
