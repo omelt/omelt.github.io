@@ -94,24 +94,24 @@
 
 
 
-  <meta name="description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+  <meta name="description" content="记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java中static顺序">
-<meta property="og:url" content="http://yoursite.com/2018/09/15/Java中static顺序/index.html">
+<meta property="og:title" content="关于openshift的笔记">
+<meta property="og:url" content="http://yoursite.com/2018/09/28/关于openshift的笔记/index.html">
 <meta property="og:site_name" content="Omelt&#39;s blog">
-<meta property="og:description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+<meta property="og:description" content="记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-01-06T10:12:29.820Z">
+<meta property="og:updated_time" content="2019-01-06T15:49:18.065Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java中static顺序">
-<meta name="twitter:description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+<meta name="twitter:title" content="关于openshift的笔记">
+<meta name="twitter:description" content="记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/09/15/Java中static顺序/">
+  <link rel="canonical" href="http://yoursite.com/2018/09/28/关于openshift的笔记/">
 
 
 
@@ -121,7 +121,7 @@
   };
 </script>
 
-  <title>Java中static顺序 | Omelt's blog</title>
+  <title>关于openshift的笔记 | Omelt's blog</title>
   
 
 
@@ -286,7 +286,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/Java中static顺序/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/28/关于openshift的笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="omelt">
@@ -303,7 +303,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java中static顺序
+          <h1 class="post-title" itemprop="name headline">关于openshift的笔记
 
               
             
@@ -329,7 +329,7 @@
                 
               
 
-              <time title="Created: 2018-09-15 17:40:51" itemprop="dateCreated datePublished" datetime="2018-09-15T17:40:51+08:00">2018-09-15</time>
+              <time title="Created: 2018-09-28 11:44:56" itemprop="dateCreated datePublished" datetime="2018-09-28T11:44:56+08:00">2018-09-28</time>
             
 
             
@@ -346,7 +346,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-01-06 18:12:29" itemprop="dateModified" datetime="2019-01-06T18:12:29+08:00">2019-01-06</time>
+                <time title="Modified: 2019-01-06 23:49:18" itemprop="dateModified" datetime="2019-01-06T23:49:18+08:00">2019-01-06</time>
               
             
           </span>
@@ -379,15 +379,20 @@
       
 
       
-        <blockquote>
-<p>java中内的static代码块是按顺序加载的,在上面的优先</p>
-</blockquote>
-<a id="more"></a>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class test&#123;</span><br><span class="line">	static &#123;</span><br><span class="line">		a=5;	</span><br><span class="line">	&#125;</span><br><span class="line">	static int a=6;</span><br><span class="line">	//上面等于</span><br><span class="line">	//static int a;</span><br><span class="line">	//static &#123;</span><br><span class="line">	//	a=6;	</span><br><span class="line">	//&#125;</span><br><span class="line">&#125;  //此时a的结果为6</span><br></pre></td></tr></table></figure>
+        <h3 id="记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记"><a href="#记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记" class="headerlink" title="记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记"></a>记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记</h3><a id="more"></a>
 <hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">原因在了解类初始化后就清楚了</span><br><span class="line">类初始化这是类加载过程的最后一步,除了加载阶段外,其他动作用户都不能自定义,全由jvm主导.到了初始化,才真正开始执行定义的java代码(在准备阶段,变量已经赋</span><br><span class="line">过一次系统要求初始值)根据程序员通过程序制定的主观计划去初始化类变量和其他资源,初始化阶段就是执行类构造器&lt;clinit&gt;()方法的过程.</span><br><span class="line">&lt;clinit&gt;方法是编译器自动收集类中的所有类变量的赋值动作和静态语句块中的语句并产生的.</span><br><span class="line">编译器收集的顺序是由语句在源文件出现的顺序决定.静态语句块只能访问到定义在静态语句快之前的变量,之后的虽然可以赋值但不可以访问.</span><br><span class="line">&lt;clinit&gt;和实例构造器&lt;init&gt;不同,不需要显示调用父类构造器,因此jvm会保证父类的&lt;clinit&gt;以及被调用</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">static &#123;</span><br><span class="line">        a=5;</span><br><span class="line">        System.out.println(a);  //Error: java: 非法前向引用</span><br><span class="line">    &#125;</span><br><span class="line">    static int a=6;</span><br></pre></td></tr></table></figure>
-<p>可以简单理解为static在类中以顺序执行.</p>
+<blockquote>
+<p>1.oc 集中了操作<br>2.部署出错docker images ,docker ps 看看,不行就重启docker 试一试<br>3.分清楚 project,app,node,pod区分.<br>4.创建的项目使用template部署填写的域名,该域名会由前面创建好的router来捕捉到对应的pod中.<br>5.oc rsh 可以进入pod内部 又一个linux<br>6.pod包含一个和多个(docker),简单理解就相当于你的linux跑多个docker<br>7.应用对于一个或多个pod,使用Service,使他们做到ip地址相对恒定. 该ip即便在你的主机上也ping不通,但是可以访问.<br>8.oc expose svc 创建路由<br>9.oc rsync 用于同步 可以用于备份oc rsync docker-registry-1-p2crc:/registry .<br>10.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;docker rm $(docker ps -a -q)  docker rmi -f $(docker images -q)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>11.可以用来调试的命令<br>journalctl -fu docker (查看日志可以啊)<br>oc get pod –all-namespaces<br>curl <a href="https://localhost:8443" target="_blank" rel="noopener">https://localhost:8443</a> -k<br>12.<br>oc delete po –all<br>oc rollout latest dc/router<br>oc get event<br>13.对s2i的测试 反正就先 docker build 再 run 再 s2i build 然后docker run<br>自定义镜像 要在oc edit is/{name} -n openshift  添加tages ，页面才能看见。<br>14.oc export bc,dc,svc,is -o json –as-template=’***’ &gt; /test.json<br>导出 bc,dc,svc,is(这四个就是全部了)<br>然后 oc create -f 这个文件 页面就添加了模板<br>15.error: fatal: unable to access ‘<a href="https://github.com/..." target="_blank" rel="noopener">https://github.com/...</a>. 防火墙问题<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> $ firewall-cmd --zone=trusted --change-interface=docker0(不&gt; 需要再清空Iptables)</span><br><span class="line">$ systemctl restart firewalld</span><br><span class="line">或</span><br><span class="line">$ systemctl stop firewalld . -- this is the solution for me</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>应该就行了 可以用命令 进行builds相关操作 最后重新build<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;oc start-build --from-build=&lt;your build identifier&gt;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>16.DOCKER_OPTS=”–insecure-registry 172.30.0.0/16 –insecure-registry localhost:5000”</p>
+</blockquote>
 
       
     </div>
@@ -418,8 +423,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/25/Java线程池/" rel="next" title="Java线程池">
-                <i class="fa fa-chevron-left"></i> Java线程池
+              <a href="/2018/09/15/Java中static顺序/" rel="next" title="Java中static顺序">
+                <i class="fa fa-chevron-left"></i> Java中static顺序
               </a>
             
           </div>
@@ -428,8 +433,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/09/28/关于openshift的笔记/" rel="prev" title="关于openshift的笔记">
-                关于openshift的笔记 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/12/18/关于spring-cloud的一点笔记/" rel="prev" title="关于spring cloud的一点笔记">
+                关于spring cloud的一点笔记 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -475,8 +480,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -522,6 +536,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记"><span class="nav-number">1.</span> <span class="nav-text">记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       

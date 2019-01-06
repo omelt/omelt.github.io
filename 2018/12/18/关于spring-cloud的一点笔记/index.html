@@ -94,24 +94,24 @@
 
 
 
-  <meta name="description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+  <meta name="description" content="自己关于spring cloud学习的是时候留下的笔记,没有回头整理,应该有很多不到位的地方,没有评论(也没有人看 - -)系统改天加上.回头也要自己整理下笔记,否则出错仍然错,理解浅显以后误导自己.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java中static顺序">
-<meta property="og:url" content="http://yoursite.com/2018/09/15/Java中static顺序/index.html">
+<meta property="og:title" content="关于spring cloud的一点笔记">
+<meta property="og:url" content="http://yoursite.com/2018/12/18/关于spring-cloud的一点笔记/index.html">
 <meta property="og:site_name" content="Omelt&#39;s blog">
-<meta property="og:description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+<meta property="og:description" content="自己关于spring cloud学习的是时候留下的笔记,没有回头整理,应该有很多不到位的地方,没有评论(也没有人看 - -)系统改天加上.回头也要自己整理下笔记,否则出错仍然错,理解浅显以后误导自己.">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-01-06T10:12:29.820Z">
+<meta property="og:updated_time" content="2019-01-06T15:02:43.600Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java中static顺序">
-<meta name="twitter:description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+<meta name="twitter:title" content="关于spring cloud的一点笔记">
+<meta name="twitter:description" content="自己关于spring cloud学习的是时候留下的笔记,没有回头整理,应该有很多不到位的地方,没有评论(也没有人看 - -)系统改天加上.回头也要自己整理下笔记,否则出错仍然错,理解浅显以后误导自己.">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/09/15/Java中static顺序/">
+  <link rel="canonical" href="http://yoursite.com/2018/12/18/关于spring-cloud的一点笔记/">
 
 
 
@@ -121,7 +121,7 @@
   };
 </script>
 
-  <title>Java中static顺序 | Omelt's blog</title>
+  <title>关于spring cloud的一点笔记 | Omelt's blog</title>
   
 
 
@@ -286,7 +286,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/Java中static顺序/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/18/关于spring-cloud的一点笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="omelt">
@@ -303,7 +303,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java中static顺序
+          <h1 class="post-title" itemprop="name headline">关于spring cloud的一点笔记
 
               
             
@@ -329,7 +329,7 @@
                 
               
 
-              <time title="Created: 2018-09-15 17:40:51" itemprop="dateCreated datePublished" datetime="2018-09-15T17:40:51+08:00">2018-09-15</time>
+              <time title="Created: 2018-12-18 09:53:11" itemprop="dateCreated datePublished" datetime="2018-12-18T09:53:11+08:00">2018-12-18</time>
             
 
             
@@ -346,7 +346,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-01-06 18:12:29" itemprop="dateModified" datetime="2019-01-06T18:12:29+08:00">2019-01-06</time>
+                <time title="Modified: 2019-01-06 23:02:43" itemprop="dateModified" datetime="2019-01-06T23:02:43+08:00">2019-01-06</time>
               
             
           </span>
@@ -379,15 +379,15 @@
       
 
       
-        <blockquote>
-<p>java中内的static代码块是按顺序加载的,在上面的优先</p>
+        <h3 id="自己关于spring-cloud学习的是时候留下的笔记-没有回头整理-应该有很多不到位的地方-没有评论-也没有人看-系统改天加上-回头也要自己整理下笔记-否则出错仍然错-理解浅显以后误导自己"><a href="#自己关于spring-cloud学习的是时候留下的笔记-没有回头整理-应该有很多不到位的地方-没有评论-也没有人看-系统改天加上-回头也要自己整理下笔记-否则出错仍然错-理解浅显以后误导自己" class="headerlink" title="自己关于spring cloud学习的是时候留下的笔记,没有回头整理,应该有很多不到位的地方,没有评论(也没有人看 - -)系统改天加上.回头也要自己整理下笔记,否则出错仍然错,理解浅显以后误导自己."></a>自己关于spring cloud学习的是时候留下的笔记,没有回头整理,应该有很多不到位的地方,没有评论(也没有人看 - -)系统改天加上.回头也要自己整理下笔记,否则出错仍然错,理解浅显以后误导自己.</h3><a id="more"></a>
+<blockquote>
+<p>1.Eureka、Consul进行服务治理（注册与发现服务）一般用Eureka spring自带的页面，Consul是第三方页面<br>2.分为server ，client ，consumer。server是指“服务注册中心”，client是指“服务提供方”，consumer使用服务的部分。<br>3.一般会配置网关（zuul等）。在consumer也进行负载均衡，在网关作为行过滤和统一处理异常，api文档汇总（swagger）的地方。总的来说consumer更像service层，而web层仍然就是web层。<br>4.为了高可用性，使用Hystrix断路器，进行服务容错保护。<br>5.读取config时 label 表示版本 （master等等） profiles表示后缀（dev啥的） name表示名字<br>/{name}/{label}/{profiles} 访问（详细可以查看server的输出）<br>6.在Spring Cloud微服务系统中，一种常见的负载均衡方式是，客户端的请求首先经过负载均衡（zuul、Ngnix），再到达服务网关（zuul集群），然后再到具体的服。，服务统一注册到高可用的服务注册中心集群，服务的所有的配置文件由配置服务管理，配置服务的配置文件放在git仓库，方便开发人员随时改配置。<br>粗略解释：<br>用户请求 -》服务器（nginx等）-》zuul-》消费者-》调用服务 —》返回<br>     （反复在eureka注册中心找到对应服务位置）<br>7.zuul过滤请求直接继承 ZuulFilter<br>各个方法表示：<br>filterType：返回一个字符串代表过滤器的类型，在zuul中定义了四种不同生命周期的过滤器类型，具体如下：<br>pre：路由之前<br>routing：路由之时<br>post： 路由之后<br>error：发送错误调用<br>filterOrder：过滤的顺序<br>shouldFilter：这里可以写逻辑判断，是否要过滤，本文true,永远过滤。<br>run：过滤器的具体逻辑。可用很复杂，包括查sql，nosql去判断该请求到底有没有权限访问。<br>8.服务追踪 服务间的调用会变的复杂，出错当然需要跟踪。<br>Span：基本工作单元，例如，在一个新建的span中发送一个RPC等同于发送一个回应请求给RPC，span通过一个64位ID唯一标识，trace以另一个64位ID表示，span还有其他数据信息，比如摘要、时间戳事件、关键值注释(tags)、span的ID、以及进度ID(通常是IP地址)<br>span在不断的启动和停止，同时记录了时间信息，当你创建了一个span，你必须在未来的某个时刻停止它。<br>Trace：一系列spans组成的一个树状结构，例如，如果你正在跑一个分布式大数据工程，你可能需要创建一个trace。<br>Annotation：用来及时记录一个事件的存在，一些核心annotations用来定义一个请求的开始和结束<br>cs - Client Sent -客户端发起一个请求，这个annotion描述了这个span的开始<br>sr - Server Received -服务端获得请求并准备开始处理它，如果将其sr减去cs时间戳便可得到网络延迟<br>ss - Server Sent -注解表明请求处理的完成(当请求返回客户端)，如果ss减去sr时间戳便可得到服务端需要的处理请求时间<br>cr - Client Received -表明span的结束，客户端成功接收到服务端的回复，如果cr减去cs时间戳便可得到客户端从服务端获取回复的所有所需时间<br>9.Eureka通过运行多个实例，使其更具有高可用性。事实上，这是它默认的熟性，你需要做的就是给对等的实例一个合法的关联serviceurl。<br>10.到了spring security5<br>密码要加密 可参考<br>auth.inMemoryAuthentication()<br>                .passwordEncoder(new BCryptPasswordEncoder())<br>                .withUser(“lctest”)<br>                .password(new BCryptPasswordEncoder().encode(“123456”))<br>                .roles(“USER”);</p>
+<ol start="11">
+<li>spring security的配置代码中,@ EnableGlobalMethodSecurity 注解开启了方法级别的保护,括号后面的参数可选,可选的参数如下。<br>prePostEnabled: Spring Security 的 Pre 和 Post 注解是否可用,即@PreAuthorize 和<br>@PostAuthorize 是否可用 。<br>secureEnabled: Spring Security 的 @Secured 注解是否可用。<br>jsr250Enabled: Spring Security 对 JSR-250 的注解是否可用 。<br>在方法上写权限注解<br>@PreAuthorize(“hasRole(‘ADMIN’)”)  @PreAuthorize(“hasAuthority(‘ROLE_ADMIN’)”) </li>
+<li>UserDetails 接口,该接口是实现 Spring Security 认证信息的核心接口详细可以阅读相关文档</li>
+<li>spring security ==&gt; spring oauth2 ==&gt; oauth2+jwt<br>一般以最后一种作为安全验证<br>14.如果在openshift上部署一个微服务集群,openshift有自己的路由,相当于是不spring cloud上的路由短路了.</li>
+</ol>
 </blockquote>
-<a id="more"></a>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class test&#123;</span><br><span class="line">	static &#123;</span><br><span class="line">		a=5;	</span><br><span class="line">	&#125;</span><br><span class="line">	static int a=6;</span><br><span class="line">	//上面等于</span><br><span class="line">	//static int a;</span><br><span class="line">	//static &#123;</span><br><span class="line">	//	a=6;	</span><br><span class="line">	//&#125;</span><br><span class="line">&#125;  //此时a的结果为6</span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">原因在了解类初始化后就清楚了</span><br><span class="line">类初始化这是类加载过程的最后一步,除了加载阶段外,其他动作用户都不能自定义,全由jvm主导.到了初始化,才真正开始执行定义的java代码(在准备阶段,变量已经赋</span><br><span class="line">过一次系统要求初始值)根据程序员通过程序制定的主观计划去初始化类变量和其他资源,初始化阶段就是执行类构造器&lt;clinit&gt;()方法的过程.</span><br><span class="line">&lt;clinit&gt;方法是编译器自动收集类中的所有类变量的赋值动作和静态语句块中的语句并产生的.</span><br><span class="line">编译器收集的顺序是由语句在源文件出现的顺序决定.静态语句块只能访问到定义在静态语句快之前的变量,之后的虽然可以赋值但不可以访问.</span><br><span class="line">&lt;clinit&gt;和实例构造器&lt;init&gt;不同,不需要显示调用父类构造器,因此jvm会保证父类的&lt;clinit&gt;以及被调用</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">static &#123;</span><br><span class="line">        a=5;</span><br><span class="line">        System.out.println(a);  //Error: java: 非法前向引用</span><br><span class="line">    &#125;</span><br><span class="line">    static int a=6;</span><br></pre></td></tr></table></figure>
-<p>可以简单理解为static在类中以顺序执行.</p>
 
       
     </div>
@@ -418,8 +418,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/25/Java线程池/" rel="next" title="Java线程池">
-                <i class="fa fa-chevron-left"></i> Java线程池
+              <a href="/2018/09/28/关于openshift的笔记/" rel="next" title="关于openshift的笔记">
+                <i class="fa fa-chevron-left"></i> 关于openshift的笔记
               </a>
             
           </div>
@@ -428,8 +428,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/09/28/关于openshift的笔记/" rel="prev" title="关于openshift的笔记">
-                关于openshift的笔记 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/12/18/Java中lambda表达式/" rel="prev" title="Java中lambda表达式">
+                Java中lambda表达式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -475,8 +475,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -522,6 +531,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#自己关于spring-cloud学习的是时候留下的笔记-没有回头整理-应该有很多不到位的地方-没有评论-也没有人看-系统改天加上-回头也要自己整理下笔记-否则出错仍然错-理解浅显以后误导自己"><span class="nav-number">1.</span> <span class="nav-text">自己关于spring cloud学习的是时候留下的笔记,没有回头整理,应该有很多不到位的地方,没有评论(也没有人看 - -)系统改天加上.回头也要自己整理下笔记,否则出错仍然错,理解浅显以后误导自己.</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       

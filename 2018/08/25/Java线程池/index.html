@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/code.png?v=6.7.0">
+
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="使用线程池去创建线程,一般提到池,就是池化技术.很明显使用线程的时候就去创建一个线程，这样实现起来非常简便，但是就会有一个问题： 如果并发的线程数量很多，并且每个线程都是执行一个时间很短的任务就结束了，这样频繁创建线程就会大大降低系统的效率，因为频繁创建线程和销毁线程需要时间。在Java中可以通过线程池来达到这样的效果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java线程池">
+<meta property="og:url" content="http://yoursite.com/2018/08/25/Java线程池/index.html">
+<meta property="og:site_name" content="Omelt&#39;s blog">
+<meta property="og:description" content="使用线程池去创建线程,一般提到池,就是池化技术.很明显使用线程的时候就去创建一个线程，这样实现起来非常简便，但是就会有一个问题： 如果并发的线程数量很多，并且每个线程都是执行一个时间很短的任务就结束了，这样频繁创建线程就会大大降低系统的效率，因为频繁创建线程和销毁线程需要时间。在Java中可以通过线程池来达到这样的效果。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-06T15:46:54.037Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java线程池">
+<meta name="twitter:description" content="使用线程池去创建线程,一般提到池,就是池化技术.很明显使用线程的时候就去创建一个线程，这样实现起来非常简便，但是就会有一个问题： 如果并发的线程数量很多，并且每个线程都是执行一个时间很短的任务就结束了，这样频繁创建线程就会大大降低系统的效率，因为频繁创建线程和销毁线程需要时间。在Java中可以通过线程池来达到这样的效果。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/08/25/Java线程池/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Java线程池 | Omelt's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Omelt's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/25/Java线程池/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="omelt">
+      <meta itemprop="description" content="人是要向前走的">
+      <meta itemprop="image" content="/images/headicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Omelt's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java线程池
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-08-25 21:15:35" itemprop="dateCreated datePublished" datetime="2018-08-25T21:15:35+08:00">2018-08-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-01-06 23:46:54" itemprop="dateModified" datetime="2019-01-06T23:46:54+08:00">2019-01-06</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="使用线程池去创建线程-一般提到池-就是池化技术-很明显使用线程的时候就去创建一个线程，这样实现起来非常简便，但是就会有一个问题："><a href="#使用线程池去创建线程-一般提到池-就是池化技术-很明显使用线程的时候就去创建一个线程，这样实现起来非常简便，但是就会有一个问题：" class="headerlink" title="使用线程池去创建线程,一般提到池,就是池化技术.很明显使用线程的时候就去创建一个线程，这样实现起来非常简便，但是就会有一个问题："></a>使用线程池去创建线程,一般提到池,就是池化技术.很明显使用线程的时候就去创建一个线程，这样实现起来非常简便，但是就会有一个问题：</h4><blockquote>
+<p>如果并发的线程数量很多，并且每个线程都是执行一个时间很短的任务就结束了，这样频繁创建线程就会大大降低系统的效率，因为频繁创建线程和销毁线程需要时间。在Java中可以通过线程池来达到这样的效果。</p>
+</blockquote>
+<a id="more"></a>
+<h3 id="明显的它的”好处”"><a href="#明显的它的”好处”" class="headerlink" title="明显的它的”好处”:"></a>明显的它的”好处”:</h3><blockquote>
+<p>1.降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。<br>2.提高响应速度。当任务到达时，任务可以不需要等到线程创建就能立即执行。<br>3.提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。</p>
+</blockquote>
+<hr>
+<h3 id="同样的”风险”"><a href="#同样的”风险”" class="headerlink" title="同样的”风险”:"></a>同样的”风险”:</h3><blockquote>
+<p>1.死锁(嘛,那啥,任何多线程应用程序都有死锁风险….)在那种情况下，所有池线程都在执行已阻塞的等待队列中另一任务的执行结果的任务，但这一任务却因为没有未被占用的线程而不能运行。当线程池被用来实现涉及许多交互对象的模拟，被模拟的对象可以相互发送查询，这些查询接下来作为排队的任务执行，查询对象又同步等待着响应时，会发生这种情况。<br>2.相对于其它替代调度机制（有些我们已经讨论过）而言，它们通常执行得很好。但只有恰当地调整了线程池大小时才是这样的。线程消耗包括内存和其它系统资源在内的大量资源。除了 Thread 对象所需的内存之外，每个线程都需要两个可能很大的执行调用堆栈。除此以外，JVM 可能会为每个 Java 线程创建一个本机线程，这些本机线程将消耗额外的系统资源。<br>3.并发错误,线程池和其它排队机制依靠使用 wait() 和 notify() 方法，这两个方法都难于使用。如果编码不正确，那么可能丢失通知，导致线程保持空闲状态，尽管队列中有工作要处理。使用这些方法时，必须格外小心。而最好使用现有的、已经知道能工作的实现，例如 util.concurrent 包。(????否则呢????)<br>4.线程泄漏,各种类型的线程池中一个严重的风险是线程泄漏，当从池中除去一个线程以执行一项任务，而在任务完成后该线程却没有返回池时，会发生这种情况。(发生线程泄漏的一种情形出现在任务抛出一个 RuntimeException 或一个 Error 时。如果池类没有捕捉到它们，那么线程只会退出而线程池的大小将会永久减少一个。当这种情况发生的次数足够多时，线程池最终就为空，而且系统将停止，因为没有可用的线程来处理任务。有些任务可能会永远等待某些资源或来自用户的输入，而这些资源又不能保证变得可用，用户可能也已经回家了，诸如此类的任务会永久停止，而这些停止的任务也会引起和线程泄漏同样的问题。)</p>
+</blockquote>
+<h2 id="5-请求过载-仅仅是请求就压垮了服务器，这种情况是可能的"><a href="#5-请求过载-仅仅是请求就压垮了服务器，这种情况是可能的" class="headerlink" title="5.请求过载,仅仅是请求就压垮了服务器，这种情况是可能的."></a>5.请求过载,仅仅是请求就压垮了服务器，这种情况是可能的.</h2><h3 id="看一下常用的几种线程池"><a href="#看一下常用的几种线程池" class="headerlink" title="看一下常用的几种线程池"></a>看一下常用的几种线程池</h3><p>1.newCachedThreadPool:创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。工作线程的创建数量几乎没有限制(其实也有限制的,数目为Interger. MAX_VALUE), 这样可灵活的往线程池中添加线程。一定要注意控制任务的数量，否则，由于大量线程同时运行，很有会造成系统瘫痪<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ExecutorService executorService= Executors.newCachedThreadPool();</span><br><span class="line">        for (int i = 0; i &lt; 10; i++) &#123;</span><br><span class="line">            final int x=i;</span><br><span class="line">            Thread.sleep(100*i);</span><br><span class="line">            executorService.execute(new Runnable() &#123;</span><br><span class="line">                @Override</span><br><span class="line">                public void run() &#123;</span><br><span class="line">                    System.out.println(x);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);//1分钟自己停</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
+<p>2.newFixedThreadPool:典型且优秀的线程池，它具有线程池提高程序效率和节省创建线程时所耗的开销的优点。但是，在线程池空闲时，即线程池中没有可运行任务时，它不会释放工作线程，还会占用一定的系统资源。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">ExecutorService executorService= Executors.newFixedThreadPool(3);</span><br><span class="line">       final char[] s=&#123;&apos;a&apos;,&apos;b&apos;,&apos;c&apos;&#125;;</span><br><span class="line">       for (int i = 0; i &lt; 30; i++) &#123;</span><br><span class="line">           final int x=i%3;</span><br><span class="line">           executorService.execute(new Runnable() &#123;</span><br><span class="line">               @Override</span><br><span class="line">               public void run() &#123;</span><br><span class="line">                   try &#123;</span><br><span class="line">                       Thread.sleep(100);</span><br><span class="line">                   &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                       e.printStackTrace();</span><br><span class="line">                   &#125;</span><br><span class="line">                   System.out.println(s[x]);</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;);//典型...(不会停啊)</span><br><span class="line">       &#125;</span><br><span class="line">       executorService.shutdown();</span><br></pre></td></tr></table></figure></p>
+<p>3.newSingleThreadExecutor:只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。如果这个线程异常结束，会有另一个取代它，保证顺序执行。单工作线程最大的特点是可保证顺序地执行各个任务，并且在任意给定的时间不会有多个线程是活动的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">ExecutorService executorService= Executors.newSingleThreadExecutor();</span><br><span class="line">        for (int i = 0; i &lt; 10; i++) &#123;</span><br><span class="line">            final int x=i;</span><br><span class="line"></span><br><span class="line">            executorService.execute(new Runnable() &#123;</span><br><span class="line">                @Override</span><br><span class="line">                public void run() &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        Thread.sleep(1000);</span><br><span class="line">                    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                    System.out.println(x);//只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        executorService.shutdown();</span><br></pre></td></tr></table></figure></p>
+<p>4.newScheduleThreadPool:创建一个定长的线程池，而且支持定时的以及周期性的任务执行，支持定时及周期性任务执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">ScheduledExecutorService executorService= Executors.newScheduledThreadPool(3);</span><br><span class="line">        for (int i = 0; i &lt; 10; i++) &#123;</span><br><span class="line">            final int x=i;</span><br><span class="line"></span><br><span class="line">            executorService.schedule(new Runnable() &#123;</span><br><span class="line">                @Override</span><br><span class="line">                public void run() &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        Thread.sleep(1);</span><br><span class="line">                    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                    System.out.println(x);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,3, TimeUnit.SECONDS);//一秒一个 一次一个 而且是按照有任务按照指定顺序(FIFO, LIFO, 优先级)执行 但是也不会自己停好像</span><br><span class="line">        &#125;</span><br><span class="line">        executorService.shutdown();</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="线程池有几个”使用规则”"><a href="#线程池有几个”使用规则”" class="headerlink" title="线程池有几个”使用规则”"></a>线程池有几个”使用规则”</h3><blockquote>
+<p>不要对那些同步等待其它任务结果的任务排队。这可能会导致上面所描述的那种形式的死锁，在那种死锁中，所有线程都被一些任务所占用，这些任务依次等待排队任务的结果，而这些任务又无法执行，因为所有的线程都很忙。<br>在为时间可能很长的操作使用合用的线程时要小心。如果程序必须等待诸如 I/O 完成这样的某个资源，那么请指定最长的等待时间，以及随后是失效还是将任务重新排队以便稍后执行。这样做保证了：通过将某个线程释放给某个可能成功完成的任务，从而将最终取得某些进展。<br>理解任务。要有效地调整线程池大小，您需要理解正在排队的任务以及它们正在做什么。它们是 CPU 限制的（CPU-bound）吗？它们是 I/O 限制的（I/O-bound）吗？您的答案将影响您如何调整应用程序。如果您有不同的任务类，这些类有着截然不同的特征，那么为不同任务类设置多个工作队列可能会有意义，这样可以相应地调整每个池。(理解万岁!!!)<br>设置大小时,对于大多数应用程序来说，太多和太少之间的余地相当宽。因为并不是所有线程都一直在工作。通过使用概要分析，您可以估计某个典型请求的等待时间（WT）与服务时间（ST）之间的比例。如果我们将这一比例称之为 WT/ST，那么对于一个具有 N 个处理器的系统，需要设置大约 N<em>(1+WT/ST) 个线程来保持处理器得到充分利用。一般N</em>2吧大概………–!(刚好八核四线程…..)s<br>“几个例子在代码 code/TheadPool.java”</p>
+</blockquote>
+<hr>
+<h3 id="ThreadPoolExecutor、AbstractExecutorService、ExecutorService和Executor几个之间的关系"><a href="#ThreadPoolExecutor、AbstractExecutorService、ExecutorService和Executor几个之间的关系" class="headerlink" title="ThreadPoolExecutor、AbstractExecutorService、ExecutorService和Executor几个之间的关系."></a>ThreadPoolExecutor、AbstractExecutorService、ExecutorService和Executor几个之间的关系.</h3><blockquote>
+<p>Executor是一个顶层接口，在它里面只声明了一个方法execute(Runnable)，返回值为void，参数为Runnable类型，从字面意思可以理解，就是用来执行传进去的任务的；<br>　　然后ExecutorService接口继承了Executor接口，并声明了一些方法：submit、invokeAll、invokeAny以及shutDown等；<br>　　抽象类AbstractExecutorService实现了ExecutorService接口，基本实现了ExecutorService中声明的所有方法；<br>　　然后ThreadPoolExecutor继承了类AbstractExecutorService。</p>
+</blockquote>
+<h3 id="线程池状态"><a href="#线程池状态" class="headerlink" title="线程池状态"></a>线程池状态</h3><blockquote>
+<p>volatile int runState;<br>static final int RUNNING    = 0;<br>static final int SHUTDOWN   = 1;<br>static final int STOP       = 2;<br>static final int TERMINATED = 3;<br>runState表示当前线程池的状态，它是一个volatile变量用来保证线程之间的可见性；<br>　　下面的几个static final变量表示runState可能的几个取值。<br>　　当创建线程池后，初始时，线程池处于RUNNING状态；<br>　　如果调用了shutdown()方法，则线程池处于SHUTDOWN状态，此时线程池不能够接受新的任务，它会等待所有任务执行完毕；<br>　　如果调用了shutdownNow()方法，则线程池处于STOP状态，此时线程池不能接受新的任务，并且会去尝试终止正在执行的任务；<br>　　当线程池处于SHUTDOWN或STOP状态，并且所有工作线程已经销毁，任务缓存队列已经清空或执行结束后，线程池被设置为TERMINATED状态。</p>
+</blockquote>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考:"></a>参考:</h3><p><a href="https://www.cnblogs.com/aaron911/p/6213808.html" target="_blank" rel="noopener">java常用的几种线程池比较 - Mr.Aaron - 博客园</a><br><a href="https://www.cnblogs.com/dolphin0520/p/3932921.html" target="_blank" rel="noopener">Java并发编程：线程池的使用 - 海 子 - 博客园</a> </p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记:"></a>后记:</h3><p>内容有点多 , 看上去可能很乱 而且一直在抛概念,记忆性的东西一样,还有线程池内部的原理,以后再整理,本篇也需要以后再整理.</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/12/JAVA多线程的异常/" rel="next" title="JAVA多线程的异常">
+                <i class="fa fa-chevron-left"></i> JAVA多线程的异常
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/15/Java中static顺序/" rel="prev" title="Java中static顺序">
+                Java中static顺序 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/headicon.jpeg" alt="omelt">
+            
+              <p class="site-author-name" itemprop="name">omelt</p>
+              <p class="site-description motion-element" itemprop="description">人是要向前走的</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用线程池去创建线程-一般提到池-就是池化技术-很明显使用线程的时候就去创建一个线程，这样实现起来非常简便，但是就会有一个问题："><span class="nav-number">1.</span> <span class="nav-text">使用线程池去创建线程,一般提到池,就是池化技术.很明显使用线程的时候就去创建一个线程，这样实现起来非常简便，但是就会有一个问题：</span></a></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#明显的它的”好处”"><span class="nav-number"></span> <span class="nav-text">明显的它的”好处”:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同样的”风险”"><span class="nav-number"></span> <span class="nav-text">同样的”风险”:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-请求过载-仅仅是请求就压垮了服务器，这种情况是可能的"><span class="nav-number"></span> <span class="nav-text">5.请求过载,仅仅是请求就压垮了服务器，这种情况是可能的.</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#看一下常用的几种线程池"><span class="nav-number"></span> <span class="nav-text">看一下常用的几种线程池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池有几个”使用规则”"><span class="nav-number"></span> <span class="nav-text">线程池有几个”使用规则”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ThreadPoolExecutor、AbstractExecutorService、ExecutorService和Executor几个之间的关系"><span class="nav-number"></span> <span class="nav-text">ThreadPoolExecutor、AbstractExecutorService、ExecutorService和Executor几个之间的关系.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池状态"><span class="nav-number"></span> <span class="nav-text">线程池状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number"></span> <span class="nav-text">参考:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后记"><span class="nav-number"></span> <span class="nav-text">后记:</span></a></li></ol></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">omelt</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v6.7.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -94,24 +94,24 @@
 
 
 
-  <meta name="description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+  <meta name="description" content="简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的) Spring MVC中,一个servlet请求的执行过程就变成了这样context-param-&amp;gt;listener-&amp;gt;filter-&amp;gt;servlet-&amp;gt;interceptor(指的是拦截器)拦截器本身就是在servlet内部的 所以拦截器在servlet后context-param：就是一些需要初始">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java中static顺序">
-<meta property="og:url" content="http://yoursite.com/2018/09/15/Java中static顺序/index.html">
+<meta property="og:title" content="spring-mvc 执行过程">
+<meta property="og:url" content="http://yoursite.com/2018/06/12/spring-mvc-执行过程/index.html">
 <meta property="og:site_name" content="Omelt&#39;s blog">
-<meta property="og:description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+<meta property="og:description" content="简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的) Spring MVC中,一个servlet请求的执行过程就变成了这样context-param-&amp;gt;listener-&amp;gt;filter-&amp;gt;servlet-&amp;gt;interceptor(指的是拦截器)拦截器本身就是在servlet内部的 所以拦截器在servlet后context-param：就是一些需要初始">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-01-06T10:12:29.820Z">
+<meta property="og:updated_time" content="2019-01-06T15:12:48.800Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java中static顺序">
-<meta name="twitter:description" content="java中内的static代码块是按顺序加载的,在上面的优先">
+<meta name="twitter:title" content="spring-mvc 执行过程">
+<meta name="twitter:description" content="简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的) Spring MVC中,一个servlet请求的执行过程就变成了这样context-param-&amp;gt;listener-&amp;gt;filter-&amp;gt;servlet-&amp;gt;interceptor(指的是拦截器)拦截器本身就是在servlet内部的 所以拦截器在servlet后context-param：就是一些需要初始">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/09/15/Java中static顺序/">
+  <link rel="canonical" href="http://yoursite.com/2018/06/12/spring-mvc-执行过程/">
 
 
 
@@ -121,7 +121,7 @@
   };
 </script>
 
-  <title>Java中static顺序 | Omelt's blog</title>
+  <title>spring-mvc 执行过程 | Omelt's blog</title>
   
 
 
@@ -286,7 +286,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/Java中static顺序/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/12/spring-mvc-执行过程/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="omelt">
@@ -303,7 +303,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java中static顺序
+          <h1 class="post-title" itemprop="name headline">spring-mvc 执行过程
 
               
             
@@ -329,7 +329,7 @@
                 
               
 
-              <time title="Created: 2018-09-15 17:40:51" itemprop="dateCreated datePublished" datetime="2018-09-15T17:40:51+08:00">2018-09-15</time>
+              <time title="Created: 2018-06-12 15:07:14" itemprop="dateCreated datePublished" datetime="2018-06-12T15:07:14+08:00">2018-06-12</time>
             
 
             
@@ -346,7 +346,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-01-06 18:12:29" itemprop="dateModified" datetime="2019-01-06T18:12:29+08:00">2019-01-06</time>
+                <time title="Modified: 2019-01-06 23:12:48" itemprop="dateModified" datetime="2019-01-06T23:12:48+08:00">2019-01-06</time>
               
             
           </span>
@@ -379,15 +379,21 @@
       
 
       
-        <blockquote>
-<p>java中内的static代码块是按顺序加载的,在上面的优先</p>
+        <h4 id="简单给自己梳理下spring-mvc中的执行的过程-过滤器-拦截器之类的"><a href="#简单给自己梳理下spring-mvc中的执行的过程-过滤器-拦截器之类的" class="headerlink" title="简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的)"></a>简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的)</h4><blockquote>
+<p>Spring MVC中,一个servlet请求的执行过程就变成了这样context-param-&gt;listener-&gt;filter-&gt;servlet-&gt;interceptor(指的是拦截器)<br>拦截器本身就是在servlet内部的 所以拦截器在servlet后<br>context-param：就是一些需要初始化的配置，放入context-param中，从而被监听器（这里特指org.springframework.web.context.ContextLoaderListener）监听，然后加载；</p>
 </blockquote>
 <a id="more"></a>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class test&#123;</span><br><span class="line">	static &#123;</span><br><span class="line">		a=5;	</span><br><span class="line">	&#125;</span><br><span class="line">	static int a=6;</span><br><span class="line">	//上面等于</span><br><span class="line">	//static int a;</span><br><span class="line">	//static &#123;</span><br><span class="line">	//	a=6;	</span><br><span class="line">	//&#125;</span><br><span class="line">&#125;  //此时a的结果为6</span><br></pre></td></tr></table></figure>
 <hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">原因在了解类初始化后就清楚了</span><br><span class="line">类初始化这是类加载过程的最后一步,除了加载阶段外,其他动作用户都不能自定义,全由jvm主导.到了初始化,才真正开始执行定义的java代码(在准备阶段,变量已经赋</span><br><span class="line">过一次系统要求初始值)根据程序员通过程序制定的主观计划去初始化类变量和其他资源,初始化阶段就是执行类构造器&lt;clinit&gt;()方法的过程.</span><br><span class="line">&lt;clinit&gt;方法是编译器自动收集类中的所有类变量的赋值动作和静态语句块中的语句并产生的.</span><br><span class="line">编译器收集的顺序是由语句在源文件出现的顺序决定.静态语句块只能访问到定义在静态语句快之前的变量,之后的虽然可以赋值但不可以访问.</span><br><span class="line">&lt;clinit&gt;和实例构造器&lt;init&gt;不同,不需要显示调用父类构造器,因此jvm会保证父类的&lt;clinit&gt;以及被调用</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">static &#123;</span><br><span class="line">        a=5;</span><br><span class="line">        System.out.println(a);  //Error: java: 非法前向引用</span><br><span class="line">    &#125;</span><br><span class="line">    static int a=6;</span><br></pre></td></tr></table></figure>
-<p>可以简单理解为static在类中以顺序执行.</p>
+<p>监听器(listener)：就是对项目起到监听的作用，它能感知到包括request(请求域)，session(会话域)和applicaiton(应用程序)的初始化和属性的变化；</p>
+<p>过滤器(filter)：就是对请求起到过滤的作用，它在监听器之后，作用在servlet之前，对请求进行过滤；</p>
+<p>servlet：就是对request和response进行处理的容器，它在filter之后执行，servlet其中的一部分就是controller层（标记为servlet_2），还包括渲染视图层(标记为servlet_3)和进入controller之前系统的一些处理部分(servlet_1)，另外我们把servlet开始的时刻标记为servlet_0，servlet结束的时刻标记为servlet_4。</p>
+<p>拦截器(interceptor)：就是对请求和返回进行拦截，它作用在servlet的内部，具体来说有三个地方：</p>
+<p>1）servlet_1和servlet_2之间，即请求还没有到controller层</p>
+<p>2）servlet_2和servlet_3之间，即请求走出controller层次，还没有到渲染时图层</p>
+<p>3）servlet_3和servlet_4之间，即结束视图渲染，但是还没有到servlet的结束</p>
+<blockquote>
+<p>拦截器是基于java的反射机制的，而过滤器是基于函数回调。从灵活性上说拦截器功能更强大些，Filter能做的事情，他都能做，而且可以在请求前，请求后执行，比较灵活(原因就在上方)。Filter主要是针对URL地址做一个编码的事情、过滤掉没用的参数、安全校验（比较泛的，比如登录不登录之类），太细的话，还是建议用interceptor。不过还是根据不同情况选择合适的。</p>
+</blockquote>
 
       
     </div>
@@ -418,8 +424,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/25/Java线程池/" rel="next" title="Java线程池">
-                <i class="fa fa-chevron-left"></i> Java线程池
+              <a href="/2018/06/09/JAVA多线程的实现方式/" rel="next" title="JAVA多线程的实现方式">
+                <i class="fa fa-chevron-left"></i> JAVA多线程的实现方式
               </a>
             
           </div>
@@ -428,8 +434,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/09/28/关于openshift的笔记/" rel="prev" title="关于openshift的笔记">
-                关于openshift的笔记 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/07/12/JAVA多线程的异常/" rel="prev" title="JAVA多线程的异常">
+                JAVA多线程的异常 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -475,8 +481,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -522,6 +537,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单给自己梳理下spring-mvc中的执行的过程-过滤器-拦截器之类的"><span class="nav-number">1.</span> <span class="nav-text">简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的)</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
