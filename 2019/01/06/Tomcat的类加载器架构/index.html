@@ -94,24 +94,24 @@
 
 
 
-  <meta name="description" content="简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的) Spring MVC中,一个servlet请求的执行过程就变成了这样context-param-&amp;gt;listener-&amp;gt;filter-&amp;gt;servlet-&amp;gt;interceptor(指的是拦截器)拦截器本身就是在servlet内部的 所以拦截器在servlet后context-param：就是一些需要初始">
+  <meta name="description" content="最近看Tomcat的原理,每一层的实现,想起来之前看书有看到Tomcat的类加器的架构,当时做了笔记,刚好当作复习一样,简单整理以下.正统的类加载器架构主流的服务器都实现了自己定义的类加载器,因为一个功能健全的web服务器要解决下面几个问题:  1.同一服务器上两个Web应用程序的Java类库可以实现相互隔离;2.同一服务器上两个Web应用程序的Java类库可以实现相互共享;3.服务器要保证自身的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="spring-mvc 执行过程">
-<meta property="og:url" content="http://yoursite.com/2018/06/12/spring-mvc-执行过程/index.html">
+<meta property="og:title" content="Tomcat的类加载器架构">
+<meta property="og:url" content="http://yoursite.com/2019/01/06/Tomcat的类加载器架构/index.html">
 <meta property="og:site_name" content="Omelt&#39;s blog">
-<meta property="og:description" content="简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的) Spring MVC中,一个servlet请求的执行过程就变成了这样context-param-&amp;gt;listener-&amp;gt;filter-&amp;gt;servlet-&amp;gt;interceptor(指的是拦截器)拦截器本身就是在servlet内部的 所以拦截器在servlet后context-param：就是一些需要初始">
+<meta property="og:description" content="最近看Tomcat的原理,每一层的实现,想起来之前看书有看到Tomcat的类加器的架构,当时做了笔记,刚好当作复习一样,简单整理以下.正统的类加载器架构主流的服务器都实现了自己定义的类加载器,因为一个功能健全的web服务器要解决下面几个问题:  1.同一服务器上两个Web应用程序的Java类库可以实现相互隔离;2.同一服务器上两个Web应用程序的Java类库可以实现相互共享;3.服务器要保证自身的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-01-06T15:12:48.800Z">
+<meta property="og:updated_time" content="2019-01-07T04:30:30.284Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="spring-mvc 执行过程">
-<meta name="twitter:description" content="简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的) Spring MVC中,一个servlet请求的执行过程就变成了这样context-param-&amp;gt;listener-&amp;gt;filter-&amp;gt;servlet-&amp;gt;interceptor(指的是拦截器)拦截器本身就是在servlet内部的 所以拦截器在servlet后context-param：就是一些需要初始">
+<meta name="twitter:title" content="Tomcat的类加载器架构">
+<meta name="twitter:description" content="最近看Tomcat的原理,每一层的实现,想起来之前看书有看到Tomcat的类加器的架构,当时做了笔记,刚好当作复习一样,简单整理以下.正统的类加载器架构主流的服务器都实现了自己定义的类加载器,因为一个功能健全的web服务器要解决下面几个问题:  1.同一服务器上两个Web应用程序的Java类库可以实现相互隔离;2.同一服务器上两个Web应用程序的Java类库可以实现相互共享;3.服务器要保证自身的">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/06/12/spring-mvc-执行过程/">
+  <link rel="canonical" href="http://yoursite.com/2019/01/06/Tomcat的类加载器架构/">
 
 
 
@@ -121,7 +121,7 @@
   };
 </script>
 
-  <title>spring-mvc 执行过程 | Omelt's blog</title>
+  <title>Tomcat的类加载器架构 | Omelt's blog</title>
   
 
 
@@ -286,7 +286,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/12/spring-mvc-执行过程/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/06/Tomcat的类加载器架构/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="omelt">
@@ -303,7 +303,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">spring-mvc 执行过程
+          <h1 class="post-title" itemprop="name headline">Tomcat的类加载器架构
 
               
             
@@ -329,7 +329,7 @@
                 
               
 
-              <time title="Created: 2018-06-12 15:07:14" itemprop="dateCreated datePublished" datetime="2018-06-12T15:07:14+08:00">2018-06-12</time>
+              <time title="Created: 2019-01-06 12:10:49" itemprop="dateCreated datePublished" datetime="2019-01-06T12:10:49+08:00">2019-01-06</time>
             
 
             
@@ -346,7 +346,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-01-06 23:12:48" itemprop="dateModified" datetime="2019-01-06T23:12:48+08:00">2019-01-06</time>
+                <time title="Modified: 2019-01-07 12:30:30" itemprop="dateModified" datetime="2019-01-07T12:30:30+08:00">2019-01-07</time>
               
             
           </span>
@@ -379,21 +379,19 @@
       
 
       
-        <h4 id="简单给自己梳理下spring-mvc中的执行的过程-过滤器-拦截器之类的"><a href="#简单给自己梳理下spring-mvc中的执行的过程-过滤器-拦截器之类的" class="headerlink" title="简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的)"></a>简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的)</h4><blockquote>
-<p>Spring MVC中,一个servlet请求的执行过程就变成了这样context-param-&gt;listener-&gt;filter-&gt;servlet-&gt;interceptor(指的是拦截器)<br>拦截器本身就是在servlet内部的 所以拦截器在servlet后<br>context-param：就是一些需要初始化的配置，放入context-param中，从而被监听器（这里特指org.springframework.web.context.ContextLoaderListener）监听，然后加载；</p>
+        <h3 id="最近看Tomcat的原理-每一层的实现-想起来之前看书有看到Tomcat的类加器的架构-当时做了笔记-刚好当作复习一样-简单整理以下"><a href="#最近看Tomcat的原理-每一层的实现-想起来之前看书有看到Tomcat的类加器的架构-当时做了笔记-刚好当作复习一样-简单整理以下" class="headerlink" title="最近看Tomcat的原理,每一层的实现,想起来之前看书有看到Tomcat的类加器的架构,当时做了笔记,刚好当作复习一样,简单整理以下."></a>最近看Tomcat的原理,每一层的实现,想起来之前看书有看到Tomcat的类加器的架构,当时做了笔记,刚好当作复习一样,简单整理以下.</h3><h3 id="正统的类加载器架构"><a href="#正统的类加载器架构" class="headerlink" title="正统的类加载器架构"></a>正统的类加载器架构</h3><p>主流的服务器都实现了自己定义的类加载器,因为一个功能健全的web服务器要解决下面几个问题:</p>
+<blockquote>
+<p>1.同一服务器上两个Web应用程序的Java类库可以实现相互隔离;<br>2.同一服务器上两个Web应用程序的Java类库可以实现相互共享;<br>3.服务器要保证自身的安全不受部署Web应用影响;<br>4.支持JSP应用(现在….)的Web程序</p>
 </blockquote>
 <a id="more"></a>
 <hr>
-<p>监听器(listener)：就是对项目起到监听的作用，它能感知到包括request(请求域)，session(会话域)和applicaiton(应用程序)的初始化和属性的变化；</p>
-<p>过滤器(filter)：就是对请求起到过滤的作用，它在监听器之后，作用在servlet之前，对请求进行过滤；</p>
-<p>servlet：就是对request和response进行处理的容器，它在filter之后执行，servlet其中的一部分就是controller层（标记为servlet_2），还包括渲染视图层(标记为servlet_3)和进入controller之前系统的一些处理部分(servlet_1)，另外我们把servlet开始的时刻标记为servlet_0，servlet结束的时刻标记为servlet_4。</p>
-<p>拦截器(interceptor)：就是对请求和返回进行拦截，它作用在servlet的内部，具体来说有三个地方：</p>
-<p>1）servlet_1和servlet_2之间，即请求还没有到controller层</p>
-<p>2）servlet_2和servlet_3之间，即请求走出controller层次，还没有到渲染时图层</p>
-<p>3）servlet_3和servlet_4之间，即结束视图渲染，但是还没有到servlet的结束</p>
 <blockquote>
-<p>拦截器是基于java的反射机制的，而过滤器是基于函数回调。从灵活性上说拦截器功能更强大些，Filter能做的事情，他都能做，而且可以在请求前，请求后执行，比较灵活(原因就在上方)。Filter主要是针对URL地址做一个编码的事情、过滤掉没用的参数、安全校验（比较泛的，比如登录不登录之类），太细的话，还是建议用interceptor。不过还是根据不同情况选择合适的。</p>
+<p>为了解决的几个的问题,单独一个ClassPath就无法满足了,所以各种Web服务器都提供了好几个ClassPath路径给用户存放第三类库,一般以lib或classes被放置到不同路径中的类库,具备不同的访问范围和服务对象,通常每个目录对应一个自定义类加载器去加载.在”Tomcat”中有(/common,/server,/shared tomcat6之后已经合并成为一个/lib)可以存放java类库,web工程本身/WEB-INF下,一共4组.<br>    /common : 类库被所有Web应用程序<br>    /server : 类库可以被Tomcat使用,对WEB应用不可见<br>    /shared : Web应用可用,Tomcat自身不可见<br>    /WebApp/WEB-INF : 仅此Web应用自己可用,其他都不可见<br>    为了支持样的目录结构,自定义了多个类加载器:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Jsp类加载器 -&gt; WebApp类加载器 -&gt; Shared类加载器 - </span><br><span class="line">                                              &gt;&gt;   Common类加载器 -&gt;本身的类加载器</span><br><span class="line">                            Catelina类加载器 -</span><br></pre></td></tr></table></figure></p>
 </blockquote>
+<blockquote>
+<p>上面的指示很好理解了,各个加载器加载对应部分,WebApp加载/WEB-INF,Catelina加载/server等.通常,每个jsp文件对应一个jsp类加载器,一个WEB应用对应一个WEB加载器;<br>    同样是是双亲委派模型;可以明显看出,Catelina类加载器加载的类只能自己使用;Catelina类加载器和Shared类加载器相互隔离;WebApp类加载器可以使用Shared类加载器,但各个WebApp类加载器相互隔离;Jsp类加载器仅仅只是加载某个jsp,当jsp修改被检测到,那么会替换掉当前Jsp类加载器,并新建一个.(tomcat6之后三个目录合并成为一个/lib,默认使用Common类加载器简化部署,但是可以通过修改配置文件conf/catalina.properties的server.loader和share.loader实现其他两个)</p>
+</blockquote>
+<p>Tomcat加载器实现比较清晰易懂,采用官方推荐的:正统”的使用类加载器方式(双亲委派模型),这也是一般的类加载器的主流方式</p>
 
       
     </div>
@@ -424,8 +422,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/09/JAVA多线程的实现方式/" rel="next" title="JAVA多线程的实现方式">
-                <i class="fa fa-chevron-left"></i> JAVA多线程的实现方式
+              <a href="/2019/01/04/Markdown简单语法演示/" rel="next" title="Markdown简单语法演示">
+                <i class="fa fa-chevron-left"></i> Markdown简单语法演示
               </a>
             
           </div>
@@ -433,10 +431,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/07/12/JAVA多线程的异常/" rel="prev" title="JAVA多线程的异常">
-                JAVA多线程的异常 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -548,7 +542,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单给自己梳理下spring-mvc中的执行的过程-过滤器-拦截器之类的"><span class="nav-number">1.</span> <span class="nav-text">简单给自己梳理下spring-mvc中的执行的过程(过滤器,拦截器之类的)</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#最近看Tomcat的原理-每一层的实现-想起来之前看书有看到Tomcat的类加器的架构-当时做了笔记-刚好当作复习一样-简单整理以下"><span class="nav-number">1.</span> <span class="nav-text">最近看Tomcat的原理,每一层的实现,想起来之前看书有看到Tomcat的类加器的架构,当时做了笔记,刚好当作复习一样,简单整理以下.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正统的类加载器架构"><span class="nav-number">2.</span> <span class="nav-text">正统的类加载器架构</span></a></li></ol></div>
             
 
           </div>

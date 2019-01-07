@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/code.png?v=6.7.0">
+
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="最近一直再看&amp;lt;深入理解java虚拟机&amp;gt;一书,看了以前很多java上的性质都觉得理所当然,而且对程序的运行和优化以及gc都有了更深刻的了解.感觉之前自己对jvm和gc的理解都偏片面.这里主要谈以下手动给对象赋值为空的意义吧.本篇所有代码运行于  Java version “1.8.0_191”Java(TM) SE Runtime Environment (build 1.8.0_191">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Java中手动置空对象的意义">
+<meta property="og:url" content="http://yoursite.com/2019/01/02/在Java中手动置空对象的意义/index.html">
+<meta property="og:site_name" content="Omelt&#39;s blog">
+<meta property="og:description" content="最近一直再看&amp;lt;深入理解java虚拟机&amp;gt;一书,看了以前很多java上的性质都觉得理所当然,而且对程序的运行和优化以及gc都有了更深刻的了解.感觉之前自己对jvm和gc的理解都偏片面.这里主要谈以下手动给对象赋值为空的意义吧.本篇所有代码运行于  Java version “1.8.0_191”Java(TM) SE Runtime Environment (build 1.8.0_191">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-07T04:32:11.692Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在Java中手动置空对象的意义">
+<meta name="twitter:description" content="最近一直再看&amp;lt;深入理解java虚拟机&amp;gt;一书,看了以前很多java上的性质都觉得理所当然,而且对程序的运行和优化以及gc都有了更深刻的了解.感觉之前自己对jvm和gc的理解都偏片面.这里主要谈以下手动给对象赋值为空的意义吧.本篇所有代码运行于  Java version “1.8.0_191”Java(TM) SE Runtime Environment (build 1.8.0_191">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/02/在Java中手动置空对象的意义/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>在Java中手动置空对象的意义 | Omelt's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Omelt's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/02/在Java中手动置空对象的意义/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="omelt">
+      <meta itemprop="description" content="人是要向前走的">
+      <meta itemprop="image" content="/images/headicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Omelt's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">在Java中手动置空对象的意义
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-01-02 10:04:11" itemprop="dateCreated datePublished" datetime="2019-01-02T10:04:11+08:00">2019-01-02</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-01-07 12:32:11" itemprop="dateModified" datetime="2019-01-07T12:32:11+08:00">2019-01-07</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="最近一直再看-lt-深入理解java虚拟机-gt-一书-看了以前很多java上的性质都觉得理所当然-而且对程序的运行和优化以及gc都有了更深刻的了解"><a href="#最近一直再看-lt-深入理解java虚拟机-gt-一书-看了以前很多java上的性质都觉得理所当然-而且对程序的运行和优化以及gc都有了更深刻的了解" class="headerlink" title="最近一直再看&lt;深入理解java虚拟机&gt;一书,看了以前很多java上的性质都觉得理所当然,而且对程序的运行和优化以及gc都有了更深刻的了解."></a>最近一直再看&lt;深入理解java虚拟机&gt;一书,看了以前很多java上的性质都觉得理所当然,而且对程序的运行和优化以及gc都有了更深刻的了解.</h4><h4 id="感觉之前自己对jvm和gc的理解都偏片面-这里主要谈以下手动给对象赋值为空的意义吧"><a href="#感觉之前自己对jvm和gc的理解都偏片面-这里主要谈以下手动给对象赋值为空的意义吧" class="headerlink" title="感觉之前自己对jvm和gc的理解都偏片面.这里主要谈以下手动给对象赋值为空的意义吧."></a>感觉之前自己对jvm和gc的理解都偏片面.这里主要谈以下手动给对象赋值为空的意义吧.</h4><p>本篇所有代码运行于</p>
+<blockquote>
+<p>Java version “1.8.0_191”<br>Java(TM) SE Runtime Environment (build 1.8.0_191-b12)<br>Java HotSpot(TM) 64-Bit Server VM (build 25.191-b12, mixed mode)</p>
+</blockquote>
+<a id="more"></a>
+<hr>
+<p>在Java自身的LinkedList源码中可以看见有这样的代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">     * Unlinks non-null first node f.</span><br><span class="line">     */</span><br><span class="line">    private E unlinkFirst(Node&lt;E&gt; f) &#123;</span><br><span class="line">        // assert f == first &amp;&amp; f != null;</span><br><span class="line">        final E element = f.item;</span><br><span class="line">        final Node&lt;E&gt; next = f.next;</span><br><span class="line">        f.item = null;</span><br><span class="line">        f.next = null; // help GC</span><br><span class="line">        first = next;</span><br><span class="line">        if (next == null)</span><br><span class="line">            last = null;</span><br><span class="line">        else</span><br><span class="line">            next.prev = null;</span><br><span class="line">        size--;</span><br><span class="line">        modCount++;</span><br><span class="line">        return element;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过手动赋值对象null置空它,而且这样的地方很常见,旁边的注释给的是帮助垃圾回收.</p>
+<blockquote>
+<p>其实想想大概就可以得到为什么这样.Java不同于C++,开发者作为客户,是不允许自动回收内存的,所有的内存回收工作都是交给GC完成,至于什么时候GC,此次GC会不会回收我们认为的对象都不可以控制,虽然我们可以主动调用System.gc()去让请求一次GC,但是并不能保证一定会回收这个对象,而且GC会消耗资源,如果过于频繁明显会拖累整个系统,而且如果发生STW明显不是我们想要的,毕竟只是为了回收自己用过的几个对象而已,所以我们去把用过的对象赋予null,期待下次GC过程他被回收.</p>
+</blockquote>
+<p>可以看下面代码 (注意 VM args:-verbose:gc 查看运行结果)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    byte[] placeholder = new byte[64*1024*1024];</span><br><span class="line">    System.gc();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里不会回收 placeholder,它还在作用域上 jvm自然不会回收,这也是正常的.<br>那么改成<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#123;</span><br><span class="line">        byte[] placeholder = new byte[64*1024*1024];</span><br><span class="line">    &#125;</span><br><span class="line">    System.gc();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>placeholder已经不在了,应该回收了,但是结果仍然是不会回收的但是如果改成这样<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">        &#123;</span><br><span class="line">            byte[] placeholder = new byte[64*1024*1024];</span><br><span class="line">        &#125;</span><br><span class="line">        int a=0;</span><br><span class="line">        System.gc();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>会发现进行了回收.<br>哇,这就回收了!上面还不回收!!!<br>接下来解释一下原因<br>这个和局部变量表有很大关系,先介绍一下</p>
+<blockquote>
+<h3 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h3><p>这是一组变量值储存空间,用于存放方法参数和内部定义的局部变量(编译时就在方法的code属性中max_locals中记录所需要分配的局部变量表的最大容量),表的容量以变量槽(Variable Slot)是最小单位,jvm规范中没有明确指定一个slot应该的内存大小,只是说明要能存下各个基本类型(包括reference和returnAddress),允许slot的长度可以随着处理器,系统,虚拟机不同而变化,只要保存即使在64位虚拟机中使用了64位的物理内存空间实现slot,仍要使用对齐手段是slot的外观看起来像32位jvm.<br>关于简单的jvm数据类型,boolean和byte等其他六个和reference,returnAddress.”reference”是表示一个对象实例的引用,jvm规范中没有指定大小和结构,但要做到两点.<br>    a.是从引用中直接或间接地查找到对象在java堆中的数据存放的起始地址索引.<br>    b.是此引用中直接或间接地查找到对象所属数据类型在方法区中的储存类型信息<br>“returnAddress”类型现在已经很少见了,它是为字节码指令jsr,jsr_w和ret服务的,指向了一条字节码指令的地址,古老的jvm曾使用这几条指令来实现异常处理(现已经被异常表代替).<br>对于64位的数据,虚拟机会以高位对齐的方式为其分配两个连续的slot空间.java中有明确的规定64位的数据只有long和double(reference这可能为32位或64位),这里把这两个类型份额分割储存的做法和”long与double的非原子协定”中的把long和double分为两个32位读写有些类似,不过由于局部变量表在线程的栈堆上,属于线程私有的,无论读写两个连续的slot是否为原子操作都没有数据安全问题.<br>jvm通过索引定位的方式使用 局部变量表 ,索引值的范围是从0开始到局部变量表最大的Slot数量.如果访问的是32为数据类型的变量,索引n就代表了使用第n个Slot,如果是64位则同时使用n和n+1,对于任意相邻的两个共同存放一个数据的slot不允许任何方式只访问其中一个,jvm中明确规定如果遇到这样字节码序列会直接在校验阶段就抛出异常.</p>
+</blockquote>
+<p>方法执行时,虚拟机是使用 局部变量表  完成参数值到参数变量列表的传递过程的,如果是实例方法,那么 局部变量表  中的0号索引的Slot默认是用于传递方法所属对象实例的引用(this)其余参数按照参数表顺序排列.为了尽可能节省空间局部变量表对应的Slot可以重复使用,如果当前字节码PC计数器的值超过了某个变量的作用域,那这个变量对应的slot就可以交给其他变量.但是副作用会直接影响到系统的gc.<br><strong>为了尽可能节省栈帧空间,局部变量表的Slot是可以重用的,方法体中定义的变量,其作用域并不一定会覆盖整个方法体,如果当前字节码PC计数器的值已经超出某个的变量的作用域,那这个变量对应的Slot就可以交给其他变量使用.不过这样设计,虽然节省了栈帧空间,但是额外的副作用就是会影响到GC,出现上面代码里的情况</strong></p>
+<blockquote>
+<p>placehold能回收的根本原因是局部变量表的slot是否还存有关于placeholder数组对象的引用.第一次修改中,代码虽然已经离开了placehold作用域但是没有任何对局部变量表的读写操作,placehold的slot没有复用,所以作为GC roots一部分保持着的局部变量表仍然保持着关联.绝大多数情况下,这种关联没有及时的中断,绝大多数情况下都很轻微,但是如果一个实际方法后面代码有一堆耗时很长的操作,前面却又定义了大量占用内存的对象,但却不再使用这时手动赋予 null (代替int a=0)并不是一个没用的操作(–!)帮助进行内存回收.</p>
+</blockquote>
+<p>有书籍直接把”不使用的对象应手动赋予null”作为一条推荐的编码规则<br>但是其实并没有必要作为一个规则,用合适的变量作用域控制变量回收时间才是最好的,像上面的情况其实很少.而且存在JIT编译优化(这里不详细解释这个),赋值null的操作会被消除,就没有意义了.那么上面的代码及即使是没有int a=0也会回收掉.所以不要盲目加上=null;</p>
+<p>这一部分参考自&lt;深入理解Java虚拟机_JVM高级特性与最佳实践 &gt;一书,写的或许不那么好理解,推荐自己买来阅读 <a href="https://book.douban.com/subject/24722612/" target="_blank" rel="noopener">豆瓣</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/18/Java中lambda表达式/" rel="next" title="Java中lambda表达式">
+                <i class="fa fa-chevron-left"></i> Java中lambda表达式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/04/Markdown简单语法演示/" rel="prev" title="Markdown简单语法演示">
+                Markdown简单语法演示 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/headicon.jpeg" alt="omelt">
+            
+              <p class="site-author-name" itemprop="name">omelt</p>
+              <p class="site-description motion-element" itemprop="description">人是要向前走的</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#最近一直再看-lt-深入理解java虚拟机-gt-一书-看了以前很多java上的性质都觉得理所当然-而且对程序的运行和优化以及gc都有了更深刻的了解"><span class="nav-number">1.</span> <span class="nav-text">最近一直再看&lt;深入理解java虚拟机&gt;一书,看了以前很多java上的性质都觉得理所当然,而且对程序的运行和优化以及gc都有了更深刻的了解.</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#感觉之前自己对jvm和gc的理解都偏片面-这里主要谈以下手动给对象赋值为空的意义吧"><span class="nav-number">2.</span> <span class="nav-text">感觉之前自己对jvm和gc的理解都偏片面.这里主要谈以下手动给对象赋值为空的意义吧.</span></a></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#局部变量表"><span class="nav-number"></span> <span class="nav-text">局部变量表</span></a></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">omelt</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v6.7.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
