@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/code.png?v=6.7.0">
+
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="曾经学校安排过一门的课程,叫做&amp;lt;计算机网络&amp;gt;,当时考完试,大部分就忘了,现在来看当时上这个课还是十分有用的,当时记得最清除的就是互联网模型就简单梳理以下这部分.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简单梳理下互联网协议">
+<meta property="og:url" content="http://yoursite.com/2018/07/05/简单梳理下互联网协议/index.html">
+<meta property="og:site_name" content="Omelt&#39;s blog">
+<meta property="og:description" content="曾经学校安排过一门的课程,叫做&amp;lt;计算机网络&amp;gt;,当时考完试,大部分就忘了,现在来看当时上这个课还是十分有用的,当时记得最清除的就是互联网模型就简单梳理以下这部分.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/07/05/简单梳理下互联网协议/01.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/05/简单梳理下互联网协议/p1.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/05/简单梳理下互联网协议/p2.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/05/简单梳理下互联网协议/p2.png">
+<meta property="og:updated_time" content="2019-01-07T13:37:12.090Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="简单梳理下互联网协议">
+<meta name="twitter:description" content="曾经学校安排过一门的课程,叫做&amp;lt;计算机网络&amp;gt;,当时考完试,大部分就忘了,现在来看当时上这个课还是十分有用的,当时记得最清除的就是互联网模型就简单梳理以下这部分.">
+<meta name="twitter:image" content="http://yoursite.com/2018/07/05/简单梳理下互联网协议/01.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/07/05/简单梳理下互联网协议/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>简单梳理下互联网协议 | Omelt's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Omelt's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/05/简单梳理下互联网协议/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="omelt">
+      <meta itemprop="description" content="人是要向前走的">
+      <meta itemprop="image" content="/images/headicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Omelt's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">简单梳理下互联网协议
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-07-05 17:48:21" itemprop="dateCreated datePublished" datetime="2018-07-05T17:48:21+08:00">2018-07-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-01-07 21:37:12" itemprop="dateModified" datetime="2019-01-07T21:37:12+08:00">2019-01-07</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="曾经学校安排过一门的课程-叫做-lt-计算机网络-gt-当时考完试-大部分就忘了-现在来看当时上这个课还是十分有用的-当时记得最清除的就是互联网模型就简单梳理以下这部分"><a href="#曾经学校安排过一门的课程-叫做-lt-计算机网络-gt-当时考完试-大部分就忘了-现在来看当时上这个课还是十分有用的-当时记得最清除的就是互联网模型就简单梳理以下这部分" class="headerlink" title="曾经学校安排过一门的课程,叫做&lt;计算机网络&gt;,当时考完试,大部分就忘了,现在来看当时上这个课还是十分有用的,当时记得最清除的就是互联网模型就简单梳理以下这部分."></a>曾经学校安排过一门的课程,叫做&lt;计算机网络&gt;,当时考完试,大部分就忘了,现在来看当时上这个课还是十分有用的,当时记得最清除的就是互联网模型就简单梳理以下这部分.</h4><a id="more"></a>
+<hr>
+<h3 id="互联网模型-7-5层"><a href="#互联网模型-7-5层" class="headerlink" title="互联网模型(7/5层):"></a>互联网模型(7/5层):</h3><p><img src="/2018/07/05/简单梳理下互联网协议/01.png" alt="互联网模型"></p>
+<h2 id="1-物理层-物理上的-硬件最底层的电路之间的传输，不同的电脑与电脑之间相互通过网线，WiFi等，构建起了整个互联网的基础"><a href="#1-物理层-物理上的-硬件最底层的电路之间的传输，不同的电脑与电脑之间相互通过网线，WiFi等，构建起了整个互联网的基础" class="headerlink" title="1.物理层 :物理上的 硬件最底层的电路之间的传输，不同的电脑与电脑之间相互通过网线，WiFi等，构建起了整个互联网的基础"></a>1.物理层 :物理上的 硬件最底层的电路之间的传输，不同的电脑与电脑之间相互通过网线，WiFi等，构建起了整个互联网的基础</h2><h2 id="2-数据链路层-规定了MAC地址区分电脑-以及以太网协议-规定数据单位为：帧。"><a href="#2-数据链路层-规定了MAC地址区分电脑-以及以太网协议-规定数据单位为：帧。" class="headerlink" title="2.数据链路层 : 规定了MAC地址区分电脑,以及以太网协议,规定数据单位为：帧。"></a>2.数据链路层 : 规定了MAC地址区分电脑,以及以太网协议,规定数据单位为：帧。</h2><blockquote>
+<p>2.1 MAC地址 : 电脑的网卡,每台计算机的网卡地址就是MAC地址，每块网卡出厂的MAC地址独一无二,每台电脑都第一无二了.</p>
+</blockquote>
+<blockquote>
+<p>2.2 以太网协议: 以太网协议规定了网络数据传输过去的单位是一帧， 两台计算机之间的MAC地址也必须储存在帧中，所以一帧又分为标头(Head)和数据(Data)两部分。 标头(Head)存放两台计算机的MAC地址， 数据部分(Data)存放需要传输的数据.<br>  大概这样</p>
+</blockquote>
+<p>  <img src="/2018/07/05/简单梳理下互联网协议/p1.png" alt="头"></p>
+<blockquote>
+<p>2.3 广播技术 : 就是广而告之,给所有的计算机都发送数据，让其他计算机自己判断，其他计算机接受到了数据，判断是不是自己，不对就将其抛弃，对就将自己的MAC地址发送回去.</p>
+</blockquote>
+<h2 id="3-网络层-广播技术理论上是能成立的-但是明显不可能嘛-所以缩小到同一子网中的计算机，用广播的方式就能够实现。所以网络层提出了一个新的概念——IP"><a href="#3-网络层-广播技术理论上是能成立的-但是明显不可能嘛-所以缩小到同一子网中的计算机，用广播的方式就能够实现。所以网络层提出了一个新的概念——IP" class="headerlink" title="3.网络层: 广播技术理论上是能成立的 ,但是明显不可能嘛,所以缩小到同一子网中的计算机，用广播的方式就能够实现。所以网络层提出了一个新的概念——IP."></a>3.网络层: 广播技术理论上是能成立的 ,但是明显不可能嘛,所以缩小到同一子网中的计算机，用广播的方式就能够实现。所以网络层提出了一个新的概念——IP.</h2><blockquote>
+<p>a.IP协议 - 为每台计算机分配一个ip地址,现在广泛使用的是ipv4.是32位二进制,为了方便理解，我们分为四段十进制数从0.0.0.0到255.255.255.255.假设前24位为网络部分，后8位为主机部分。假设我们有一个ip地址为：192.168.0.123，那么192.168.0.* ， 都为同一子网.该子网最多为2^8=256台. 如何确定多少位是网络多少位是主机呢？——子网掩码。</p>
+</blockquote>
+<blockquote>
+<p>b.子网掩码 :  假设24位为网络部分，那么子网掩码为:1111 1111. 1111 1111.1111 1111.0000 0000 = 255.255.255.0, ip1 和ip2 两个ip是否在同一子网呢？ ip1 &amp; 子网掩码 == ip2&amp; 子网掩码，那么就是在同一子网。192.168.0.123&amp;255.255.225.0 = 192.168.0.0。(1&amp;1 = 1, 1&amp;0=0, 0&amp;0 = 0)</p>
+</blockquote>
+<blockquote>
+<p>c.网关(gateway)和ARP协议 :<br>  ARP协议：地址解析协议，即ARP（Address Resolution Protocol），是根据IP地址获取MAC地址的一个TCP/IP协议。主机发送信息时将包含目标IP地址的ARP请求广播到该子网的网络上的所有主机，所有主机确认该IP是否是自己本身，不是则抛弃该信息，是的话接收返回自身的MAC地址，以此确定目标的物理地址。<br>  我们已知ip地址，那么就会碰到两种情况： 1.不在同一子网: 发送方将数据交给自己的网关，网关再去找到接受方ip的网关，然后就是在同一子网的情况了。 2.在同一子网:根据ARP协议，用广播的方式发送给接收方，接收方回应后得到接收方的MAC地址。 网关：网关实质上是一个网络通向其他网络的IP地址.<br>  d.IP数据包:根据以太网协议，数据包的单位为：帧： head+data， head中存放了MAC地址，但是我们又需要ip地址才能查找到。所以我们将数据部分继续拆分为head+data。head中存放ip地址。所以一帧数据变成了：head+head+data。</p>
+</blockquote>
+<p>  <img src="/2018/07/05/简单梳理下互联网协议/p2.png" alt="头"></p>
+<h2 id="4-传输层-我们已经知道ip和mac地址，我们可以准确的找到我们需要发送数据的那台计算机，但是计算机接受了数据怎么判断数据是交给哪个应用-——端口"><a href="#4-传输层-我们已经知道ip和mac地址，我们可以准确的找到我们需要发送数据的那台计算机，但是计算机接受了数据怎么判断数据是交给哪个应用-——端口" class="headerlink" title="4.传输层 : 我们已经知道ip和mac地址，我们可以准确的找到我们需要发送数据的那台计算机，但是计算机接受了数据怎么判断数据是交给哪个应用  ——端口"></a>4.传输层 : 我们已经知道ip和mac地址，我们可以准确的找到我们需要发送数据的那台计算机，但是计算机接受了数据怎么判断数据是交给哪个应用  ——端口</h2><blockquote>
+<p>4.1 端口 : 计算机可以选择0到65535个端口，正好16个二进制位。0到1023的端口被系统占用(当然有也很多服务已经占用了其他端口)，用户程序可以在1024~65535端口之间选择一个。用户计算机端口与服务器计算机端口相连接，然后就可以传输数据了。</p>
+</blockquote>
+<blockquote>
+<p>4.2 UDP,TCP协议<br>  和前面一样，端口号当然也是要保存到数据包中，所以就有了UDP协议和TCP协议。UDP和TCP协议也同样继续将data分为head和data。head中存放端口号信息。 UDP协议：几乎就是简单的将端口号放入head中，数据没有安全保障，也容易丢包，但是传输速度非常快。比较适合语音，视频这类数据传播。 TCP协议：比较安全的将一些信息放入head中，通过协议不会丢包，通过三次握手保证信息的安全。是比较安全的一种协议。但是因为过程多(要安全)所以传输速度较慢。</p>
+</blockquote>
+<p>  <img src="/2018/07/05/简单梳理下互联网协议/p2.png" alt="头2">                                     }</p>
+<h2 id="5-应用层-不同的应用需要的数据都是不同的，向FTP传输数据格式，和邮件传输通过SMTP格式。应用层就是这些数据格式的协议组成的。为用户提供各种服务。"><a href="#5-应用层-不同的应用需要的数据都是不同的，向FTP传输数据格式，和邮件传输通过SMTP格式。应用层就是这些数据格式的协议组成的。为用户提供各种服务。" class="headerlink" title="5.应用层:不同的应用需要的数据都是不同的，向FTP传输数据格式，和邮件传输通过SMTP格式。应用层就是这些数据格式的协议组成的。为用户提供各种服务。"></a>5.应用层:不同的应用需要的数据都是不同的，向FTP传输数据格式，和邮件传输通过SMTP格式。应用层就是这些数据格式的协议组成的。为用户提供各种服务。</h2><h1 id="小结"><a href="#小结" class="headerlink" title="小结:"></a>小结:</h1><blockquote>
+<p>物理层：构成互联网基础，使得所有计算机能够物理连接在一起。 数据链路层：以太网协议，数据分为帧传递。Head存放计算机的MAC地址 网络层：IP协议，数据再次细分，Head存放计算机的ip地址 传输层：TCP或UDP协议，数据再细分， 确定数据端口。Head存放了端口号。 应用层：处理数据，为应用提供服务，使得用户能够明白和使用。</p>
+</blockquote>
+<h4 id="简单理解"><a href="#简单理解" class="headerlink" title="简单理解:"></a>简单理解:</h4><blockquote>
+<p>此刻我的IP为192.168.X.X ——&gt;浏览器访问 <a href="http://www.baidu.com/" target="_blank" rel="noopener">http://www.baidu.com/</a> , 通过域名解析(DNS)为 115.239.211.112， 通过子网掩码255.255.255.0 发现我的IP和百度的IP不在同一子网，所以本机发送一个数据包【（本机MAC地址，不知百度MAC地址），（本机的IP地址， 百度的IP地址）（TCP请求的端口）（请求正文）】的请求提交给网关(gateway)，网关去找到115.239.211.112。然后百度的服务器返回一个MAC地址。通过tcp协议三次握手建立连接</p>
+</blockquote>
+<hr>
+<h4 id="最后干脆再讲下-Http协议"><a href="#最后干脆再讲下-Http协议" class="headerlink" title="最后干脆再讲下 Http协议"></a>最后干脆再讲下 Http协议</h4><h2 id="6-http-超文本传输协议-基于TCP协议-网络层-，位于应用层"><a href="#6-http-超文本传输协议-基于TCP协议-网络层-，位于应用层" class="headerlink" title="6.http-超文本传输协议,基于TCP协议(网络层)，位于应用层."></a>6.http-超文本传输协议,基于TCP协议(网络层)，位于应用层.</h2><blockquote>
+<p>6.1 最早是Tim Berners-Lee是创建了世界上第一个网页： <a href="http://info.cern.ch/hypertext/WWW/TheProject.html" target="_blank" rel="noopener">http://info.cern.ch/hypertext/WWW/TheProject.html</a><br>  但是还需要其他人能访问.于是他还制定了一个协议。这就是http协议.HTTP0.9.这个时候只有一个GET， 后面跟着需要访问的html网页，只能是html网页，不是资源,然后建立建立TCP链接.(当然能感觉到,怎么会一开始以0.9命名,感觉开始就准备好了大阴谋啊 - -)</p>
+</blockquote>
+<blockquote>
+<p>6.2 随着人民日益增长的美好生活需要和不平衡不充分HTTP0.9之间的矛盾,http升级为了1.0版本    </p>
+</blockquote>
+<pre><code>1.任何格式： 互联网不再是只可以传输文字，还能传输图像、音频，视频、二进制文件的等。
+2.http命令：除了GET外还支持POST命令和HEAD命令。当然现在不止支持这些。应该是发展过程加上去的。
+3.请求头和响应头： 除了具有HTTP版本号的请求行，后还需要跟请求标头，响应状态，后跟响应标头，然后是响应正文。请求和响应头都保存为ASCII编码，但响应对象本身可以是任何类型：HTML文件，纯文本文件，图像或任何其他内容类型。
+4.其他常用功能：内容编码，字符集支持，多部分类型，授权，缓存，代理行为，日期格式等。
+</code></pre><blockquote>
+<p>http/1.0就和现在的协议很像.至今服务器和浏览器都还支持http1.0。但是http1.0继承的0.9的传统，每次请求都需要重新建立连接。这个十分耗费资源。(三次握手，慢启动)。而且当时http1.0是没有Keep-Alive属性的,现在如果发送一个http/1.0的请求都会返回一个http1.1</p>
+</blockquote>
+<blockquote>
+<p>6.3 http1.1 : 在1.0版本发布六个月之后,更新了1.1,之后还发布了一次对1.1版本的更新.http1.1现在仍然在使用.<br>    http 1.1解决了一些歧义问题， 当然引入了最重要的一个东西：KeepAlive连接。还有分包传输，字节范围请求，缓存机制, Host等。http1.1要求必须加上host。</p>
+</blockquote>
+<blockquote>
+<h3 id="持久连接（Persistent-Connection）"><a href="#持久连接（Persistent-Connection）" class="headerlink" title="持久连接（Persistent Connection）:"></a>持久连接（Persistent Connection）:</h3><p>http1.1 于 http 1.0 最大的区别在于keepalive，它允许我们重用现有的TCP连接，以便对同一主机发出多个请求。当然，http1.0 后来也添加了这个字段提供长久支持。但是默认是不开启的。而http 1.1 默认开始，而且不需要写这个字段就可以。简单地说，当一个网页打开完成后，客户端和服务器之间用于传输HTTP数据的TCP连接不会关闭，如果客户端再次访问这个服务器上的网页，会继续使用这一条已经建立的连接,虽然是长连接，但是只是减少了三次握手次数，请求次数还是有多少html文件，图片，css， js 就需要请求多少次的。<br>  终止这个连接。 客户端和服务器有一方提出关闭，连接就会断开。当然一段时间无响应也会关闭，但是最正确的写法自然是客户端在得到所有资源并不需要新的请求后发送colse请求(Connection: close)。</p>
+</blockquote>
+<blockquote>
+<p>HTTP/1.1加入了一个新的状态码100（Continue）。客户端事先发送一个只带头域的请求，如果服务器因为权限拒绝了请求，就回送响应码401（Unauthorized）；如果服务器接收此请求就回送响应码100，客户端就可以继续发送带实体的完整请求了。100 (Continue) 状态代码的使用，允许客户端在发request消息body之前先用request header试探一下server，看server要不要接收request body，再决定要不要发request body。</p>
+</blockquote>
+<blockquote>
+<p>此外，HTTP/1.1协议添加了内容，编码，字符集，甚至语言协商，传输编码，缓存指令，客户端cookie，以及可以在每个请求上协商的十几种其他功能，还新增了指令：PUT、PATCH、HEAD、 OPTIONS、DELETE。</p>
+</blockquote>
+<p>参考感谢:<br><a href="http://www.ruanyifeng.com/blog/2012/05/internet_protocol_suite_part_i.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2012/05/internet_protocol_suite_part_i.html</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/12/spring-mvc-执行过程/" rel="next" title="spring-mvc 执行过程">
+                <i class="fa fa-chevron-left"></i> spring-mvc 执行过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/05/http协议/" rel="prev" title="http协议">
+                http协议 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/headicon.jpeg" alt="omelt">
+            
+              <p class="site-author-name" itemprop="name">omelt</p>
+              <p class="site-description motion-element" itemprop="description">人是要向前走的</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#曾经学校安排过一门的课程-叫做-lt-计算机网络-gt-当时考完试-大部分就忘了-现在来看当时上这个课还是十分有用的-当时记得最清除的就是互联网模型就简单梳理以下这部分"><span class="nav-number">1.</span> <span class="nav-text">曾经学校安排过一门的课程,叫做&lt;计算机网络&gt;,当时考完试,大部分就忘了,现在来看当时上这个课还是十分有用的,当时记得最清除的就是互联网模型就简单梳理以下这部分.</span></a></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#互联网模型-7-5层"><span class="nav-number"></span> <span class="nav-text">互联网模型(7/5层):</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-物理层-物理上的-硬件最底层的电路之间的传输，不同的电脑与电脑之间相互通过网线，WiFi等，构建起了整个互联网的基础"><span class="nav-number"></span> <span class="nav-text">1.物理层 :物理上的 硬件最底层的电路之间的传输，不同的电脑与电脑之间相互通过网线，WiFi等，构建起了整个互联网的基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-数据链路层-规定了MAC地址区分电脑-以及以太网协议-规定数据单位为：帧。"><span class="nav-number"></span> <span class="nav-text">2.数据链路层 : 规定了MAC地址区分电脑,以及以太网协议,规定数据单位为：帧。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-网络层-广播技术理论上是能成立的-但是明显不可能嘛-所以缩小到同一子网中的计算机，用广播的方式就能够实现。所以网络层提出了一个新的概念——IP"><span class="nav-number"></span> <span class="nav-text">3.网络层: 广播技术理论上是能成立的 ,但是明显不可能嘛,所以缩小到同一子网中的计算机，用广播的方式就能够实现。所以网络层提出了一个新的概念——IP.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-传输层-我们已经知道ip和mac地址，我们可以准确的找到我们需要发送数据的那台计算机，但是计算机接受了数据怎么判断数据是交给哪个应用-——端口"><span class="nav-number"></span> <span class="nav-text">4.传输层 : 我们已经知道ip和mac地址，我们可以准确的找到我们需要发送数据的那台计算机，但是计算机接受了数据怎么判断数据是交给哪个应用  ——端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-应用层-不同的应用需要的数据都是不同的，向FTP传输数据格式，和邮件传输通过SMTP格式。应用层就是这些数据格式的协议组成的。为用户提供各种服务。"><span class="nav-number"></span> <span class="nav-text">5.应用层:不同的应用需要的数据都是不同的，向FTP传输数据格式，和邮件传输通过SMTP格式。应用层就是这些数据格式的协议组成的。为用户提供各种服务。</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number"></span> <span class="nav-text">小结:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单理解"><span class="nav-number">1.</span> <span class="nav-text">简单理解:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最后干脆再讲下-Http协议"><span class="nav-number">2.</span> <span class="nav-text">最后干脆再讲下 Http协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-http-超文本传输协议-基于TCP协议-网络层-，位于应用层"><span class="nav-number"></span> <span class="nav-text">6.http-超文本传输协议,基于TCP协议(网络层)，位于应用层.</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#持久连接（Persistent-Connection）"><span class="nav-number"></span> <span class="nav-text">持久连接（Persistent Connection）:</span></a></li></ol></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">omelt</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v6.7.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

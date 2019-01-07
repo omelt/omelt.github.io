@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="Omelt&#39;s blog">
 <meta property="og:description" content="记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-01-06T15:49:18.065Z">
+<meta property="og:updated_time" content="2019-01-07T15:09:52.166Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于openshift的笔记">
 <meta name="twitter:description" content="记录我在起openshift的时候遇到问题解决的命令和一些简单的笔记">
@@ -346,7 +346,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-01-06 23:49:18" itemprop="dateModified" datetime="2019-01-06T23:49:18+08:00">2019-01-06</time>
+                <time title="Modified: 2019-01-07 23:09:52" itemprop="dateModified" datetime="2019-01-07T23:09:52+08:00">2019-01-07</time>
               
             
           </span>
@@ -385,10 +385,10 @@
 <p>1.oc 集中了操作<br>2.部署出错docker images ,docker ps 看看,不行就重启docker 试一试<br>3.分清楚 project,app,node,pod区分.<br>4.创建的项目使用template部署填写的域名,该域名会由前面创建好的router来捕捉到对应的pod中.<br>5.oc rsh 可以进入pod内部 又一个linux<br>6.pod包含一个和多个(docker),简单理解就相当于你的linux跑多个docker<br>7.应用对于一个或多个pod,使用Service,使他们做到ip地址相对恒定. 该ip即便在你的主机上也ping不通,但是可以访问.<br>8.oc expose svc 创建路由<br>9.oc rsync 用于同步 可以用于备份oc rsync docker-registry-1-p2crc:/registry .<br>10.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;docker rm $(docker ps -a -q)  docker rmi -f $(docker images -q)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></p>
 </blockquote>
 <blockquote>
-<p>11.可以用来调试的命令<br>journalctl -fu docker (查看日志可以啊)<br>oc get pod –all-namespaces<br>curl <a href="https://localhost:8443" target="_blank" rel="noopener">https://localhost:8443</a> -k<br>12.<br>oc delete po –all<br>oc rollout latest dc/router<br>oc get event<br>13.对s2i的测试 反正就先 docker build 再 run 再 s2i build 然后docker run<br>自定义镜像 要在oc edit is/{name} -n openshift  添加tages ，页面才能看见。<br>14.oc export bc,dc,svc,is -o json –as-template=’***’ &gt; /test.json<br>导出 bc,dc,svc,is(这四个就是全部了)<br>然后 oc create -f 这个文件 页面就添加了模板<br>15.error: fatal: unable to access ‘<a href="https://github.com/..." target="_blank" rel="noopener">https://github.com/...</a>. 防火墙问题<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> $ firewall-cmd --zone=trusted --change-interface=docker0(不&gt; 需要再清空Iptables)</span><br><span class="line">$ systemctl restart firewalld</span><br><span class="line">或</span><br><span class="line">$ systemctl stop firewalld . -- this is the solution for me</span><br></pre></td></tr></table></figure></p>
+<p>11.可以用来调试的命令<br>journalctl -fu docker (查看日志可以啊)<br>oc get pod –all-namespaces<br>curl <a href="https://localhost:8443" target="_blank" rel="noopener">https://localhost:8443</a> -k<br>12.<br>oc delete po –all<br>oc rollout latest dc/router<br>oc get event<br>13.对s2i的测试 反正就先 docker build 再 run 再 s2i build 然后docker run<br>自定义镜像 要在oc edit is/{name} -n openshift  添加tages ，页面才能看见。<br>14.oc export bc,dc,svc,is -o json –as-template=’***’ &gt; /test.json<br>导出 bc,dc,svc,is(这四个就是全部了)<br>然后 oc create -f 这个文件 页面就添加了模板<br>15.error: fatal: unable to access ‘<a href="https://github.com/..." target="_blank" rel="noopener">https://github.com/...</a>. 防火墙问题<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ firewall-cmd --zone=trusted --change-interface=docker0(不&gt; 需要再清空Iptables)</span><br><span class="line">$ systemctl restart firewalld</span><br><span class="line">或</span><br><span class="line">$ systemctl stop firewalld . -- this is the solution for me</span><br></pre></td></tr></table></figure></p>
 </blockquote>
 <blockquote>
-<p>应该就行了 可以用命令 进行builds相关操作 最后重新build<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;oc start-build --from-build=&lt;your build identifier&gt;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></p>
+<p>应该就行了 可以用命令 进行builds相关操作 最后重新build<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">oc start-build --from-build=&lt;your build identifier&gt;</span><br></pre></td></tr></table></figure></p>
 </blockquote>
 <blockquote>
 <p>16.DOCKER_OPTS=”–insecure-registry 172.30.0.0/16 –insecure-registry localhost:5000”</p>
@@ -507,7 +507,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-count">15</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
