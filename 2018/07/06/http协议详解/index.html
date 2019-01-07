@@ -96,27 +96,27 @@
 
   <meta name="description" content="之前有梳理网络协议,就顺便讲了下HTTP协议,但是讲的不够具体,主要是简单讲了下HTTP协议的各个版本的过程,现在详细讲下HTTP协议,包含2.0以及https详细说一下概念:  HTTP协议是Hyper Text Transfer Protocol,服务器传输超文本到本地浏览器的传送协议,基于TCP/IP通信协议来传递数据.HTTP协议工作于客户端-服务端架构为上。浏览器作为HTTP客户端通过U">
 <meta property="og:type" content="article">
-<meta property="og:title" content="http协议">
-<meta property="og:url" content="http://yoursite.com/2018/07/05/http协议/index.html">
+<meta property="og:title" content="http协议详解">
+<meta property="og:url" content="http://yoursite.com/2018/07/06/http协议详解/index.html">
 <meta property="og:site_name" content="Omelt&#39;s blog">
 <meta property="og:description" content="之前有梳理网络协议,就顺便讲了下HTTP协议,但是讲的不够具体,主要是简单讲了下HTTP协议的各个版本的过程,现在详细讲下HTTP协议,包含2.0以及https详细说一下概念:  HTTP协议是Hyper Text Transfer Protocol,服务器传输超文本到本地浏览器的传送协议,基于TCP/IP通信协议来传递数据.HTTP协议工作于客户端-服务端架构为上。浏览器作为HTTP客户端通过U">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/2018/07/05/http协议/http协议/req.jpeg">
-<meta property="og:image" content="http://yoursite.com/2018/07/05/http协议/http协议/res.jpeg">
-<meta property="og:image" content="http://yoursite.com/2018/07/05/http协议/http协议/https.jpg">
-<meta property="og:image" content="http://yoursite.com/2018/07/05/http协议/http协议/way.jpg">
-<meta property="og:updated_time" content="2019-01-07T15:16:44.056Z">
+<meta property="og:image" content="http://yoursite.com/2018/07/06/http协议详解/req.jpeg">
+<meta property="og:image" content="http://yoursite.com/2018/07/06/http协议详解/res.jpeg">
+<meta property="og:image" content="http://yoursite.com/2018/07/06/http协议详解/https.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/07/06/http协议详解/way.jpg">
+<meta property="og:updated_time" content="2019-01-07T15:27:09.857Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="http协议">
+<meta name="twitter:title" content="http协议详解">
 <meta name="twitter:description" content="之前有梳理网络协议,就顺便讲了下HTTP协议,但是讲的不够具体,主要是简单讲了下HTTP协议的各个版本的过程,现在详细讲下HTTP协议,包含2.0以及https详细说一下概念:  HTTP协议是Hyper Text Transfer Protocol,服务器传输超文本到本地浏览器的传送协议,基于TCP/IP通信协议来传递数据.HTTP协议工作于客户端-服务端架构为上。浏览器作为HTTP客户端通过U">
-<meta name="twitter:image" content="http://yoursite.com/2018/07/05/http协议/http协议/req.jpeg">
+<meta name="twitter:image" content="http://yoursite.com/2018/07/06/http协议详解/req.jpeg">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/07/05/http协议/">
+  <link rel="canonical" href="http://yoursite.com/2018/07/06/http协议详解/">
 
 
 
@@ -126,7 +126,7 @@
   };
 </script>
 
-  <title>http协议 | Omelt's blog</title>
+  <title>http协议详解 | Omelt's blog</title>
   
 
 
@@ -291,7 +291,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/05/http协议/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/06/http协议详解/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="omelt">
@@ -308,7 +308,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">http协议
+          <h1 class="post-title" itemprop="name headline">http协议详解
 
               
             
@@ -334,7 +334,7 @@
                 
               
 
-              <time title="Created: 2018-07-05 21:43:31" itemprop="dateCreated datePublished" datetime="2018-07-05T21:43:31+08:00">2018-07-05</time>
+              <time title="Created: 2018-07-06 10:43:31" itemprop="dateCreated datePublished" datetime="2018-07-06T10:43:31+08:00">2018-07-06</time>
             
 
             
@@ -351,7 +351,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-01-07 23:16:44" itemprop="dateModified" datetime="2019-01-07T23:16:44+08:00">2019-01-07</time>
+                <time title="Modified: 2019-01-07 23:27:09" itemprop="dateModified" datetime="2019-01-07T23:27:09+08:00">2019-01-07</time>
               
             
           </span>
@@ -390,8 +390,8 @@
 </blockquote>
 <a id="more"></a>
 <hr>
-<h4 id="1-http请求"><a href="#1-http请求" class="headerlink" title="1.http请求:"></a>1.http请求:</h4><p><img src="http协议/req.jpeg" alt="request"></p>
-<h4 id="2-http响应"><a href="#2-http响应" class="headerlink" title="2.http响应:"></a>2.http响应:</h4><p><img src="http协议/res.jpeg" alt="response"></p>
+<h4 id="1-http请求"><a href="#1-http请求" class="headerlink" title="1.http请求:"></a>1.http请求:</h4><p><img src="/2018/07/06/http协议详解/req.jpeg" alt="http协议详解"></p>
+<h4 id="2-http响应"><a href="#2-http响应" class="headerlink" title="2.http响应:"></a>2.http响应:</h4><p><img src="/2018/07/06/http协议详解/res.jpeg" alt="http协议详解"></p>
 <blockquote>
 <p>图片中每部分都很清楚了<br>附上常用的HTTP请求头与响应头(感恩)<br><a href="https://itbilu.com/other/relate/EJ3fKUwUx.html#http-request-headers" target="_blank" rel="noopener">https://itbilu.com/other/relate/EJ3fKUwUx.html#http-request-headers</a></p>
 </blockquote>
@@ -440,7 +440,7 @@
 <blockquote>
 <p>一、https协议需要到ca申请证书，一般免费证书很少，需要交费。<br>二、http是超文本传输协议，信息是明文传输，https 则是具有安全性的ssl加密传输协议。<br>三、http和https使用的是完全不同的连接方式，用的端口也不一样，前者是80，后者是443。<br>四、http的连接很简单，是无状态的；HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议，比http协议安全。</p>
 </blockquote>
-<p><img src="http协议/https.jpg" alt="https"></p>
+<p><img src="https.jpg" alt="http协议详解"></p>
 <p>很明显最最关键的就是多了一层加密层</p>
 <blockquote>
 <p>SSL（Secure Socket Layer，安全套接字层）：1994年为 Netscape 所研发，SSL 协议位于 TCP/IP 协议与各种应用层协议之间，为数据通讯提供安全支持。</p>
@@ -449,7 +449,7 @@
 <p>TLS（Transport Layer Security，传输层安全）：其前身是 SSL，它最初的几个版本（SSL 1.0、SSL 2.0、SSL 3.0）由网景公司开发，1999年从 3.1 开始被 IETF 标准化并改名，发展至今已经有 TLS 1.0、TLS 1.1、TLS 1.2 三个版本。SSL3.0和TLS1.0由于存在安全漏洞，已经很少被使用到。TLS 1.3 改动会比较大，目前还在草案阶段，目前使用最广泛的是TLS 1.1、TLS 1.2。</p>
 </blockquote>
 <p>过程如下图:</p>
-<p><img src="http协议/way.jpg" alt="key"></p>
+<p><img src="/2018/07/06/http协议详解/way.jpg" alt="http协议详解"></p>
 <p>主要讲一下:客户端在接受到服务端发来的SSL证书时，会对证书的真伪进行校验</p>
 <blockquote>
 <p>（1）首先浏览器读取证书中的证书所有者、有效期等信息进行一一校验<br>（2）浏览器开始查找操作系统中已内置的受信任的证书发布机构CA，与服务器发来的证书中的颁发者CA比对，用于校验证书是否为合法机构颁发<br>（3）如果找不到，浏览器就会报错，说明服务器发来的证书是不可信任的。<br>（4）如果找到，那么浏览器就会从操作系统中取出 颁发者CA 的公钥，然后对服务器发来的证书里面的签名进行解密<br>（5）浏览器使用相同的hash算法计算出服务器发来的证书的hash值，将这个计算的hash值与证书中签名做对比<br>（6）对比结果一致，则证明服务器发来的证书合法，没有被冒充<br>（7）此时浏览器就可以读取证书中的公钥，用于后续加密了</p>
